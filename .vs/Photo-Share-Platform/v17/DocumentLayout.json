@@ -3,6 +3,17 @@
   "WorkspaceRootPath": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -99,9 +110,6 @@
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:interfaces\\ieventmemberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\services\\eventmemberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:services\\eventmemberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -118,10 +126,6 @@
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\auth\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\eventmember\\addeventmemberdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\eventmember\\addeventmemberdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -136,10 +140,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\events\\eventresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\events\\eventresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -177,11 +177,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 39,
+          "SelectedChildIndex": 41,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "VerifyGalleryPinDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Galleries\\VerifyGalleryPinDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Galleries\\VerifyGalleryPinDto.cs",
@@ -193,7 +193,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "GalleryController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\GalleryController.cs",
               "RelativeDocumentMoniker": "Controllers\\GalleryController.cs",
@@ -205,7 +205,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "GalleryService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\GalleryService.cs",
               "RelativeDocumentMoniker": "Services\\GalleryService.cs",
@@ -217,7 +217,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "IGalleryService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IGalleryService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IGalleryService.cs",
@@ -229,7 +229,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "AddGalleryPhotosDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Galleries\\AddGalleryPhotosDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Galleries\\AddGalleryPhotosDto.cs",
@@ -241,7 +241,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "CreateGalleryDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Galleries\\CreateGalleryDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Galleries\\CreateGalleryDto.cs",
@@ -253,7 +253,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "GalleryResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Galleries\\GalleryResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Galleries\\GalleryResponseDto.cs",
@@ -265,7 +265,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "PhotoController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\PhotoController.cs",
               "RelativeDocumentMoniker": "Controllers\\PhotoController.cs",
@@ -277,7 +277,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 21,
               "Title": "PhotoService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\PhotoService.cs",
               "RelativeDocumentMoniker": "Services\\PhotoService.cs",
@@ -289,7 +289,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 22,
               "Title": "IPhotoService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IPhotoService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IPhotoService.cs",
@@ -301,7 +301,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "PhotoResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Photos\\PhotoResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Photos\\PhotoResponseDto.cs",
@@ -309,12 +309,11 @@
               "RelativeToolTip": "DTOs\\Photos\\PhotoResponseDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-20T17:06:20.601Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-20T17:06:20.601Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 23,
               "Title": "StorageTestController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\StorageTestController.cs",
               "RelativeDocumentMoniker": "Controllers\\StorageTestController.cs",
@@ -326,7 +325,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "IEventService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IEventService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IEventService.cs",
@@ -338,7 +337,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "SupabaseStorageService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\SupabaseStorageService.cs",
               "RelativeDocumentMoniker": "Services\\SupabaseStorageService.cs",
@@ -350,7 +349,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "IStorageService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IStorageService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IStorageService.cs",
@@ -362,7 +361,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 2,
               "Title": "secrets.json",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
               "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
@@ -370,11 +369,12 @@
               "RelativeToolTip": "..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-09-20T16:03:30.288Z"
+              "WhenOpened": "2026-09-20T16:03:30.288Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 28,
               "Title": "EventMemberController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\EventMemberController.cs",
               "RelativeDocumentMoniker": "Controllers\\EventMemberController.cs",
@@ -386,7 +386,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 27,
               "Title": "EventMemberService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\EventMemberService.cs",
               "RelativeDocumentMoniker": "Services\\EventMemberService.cs",
@@ -398,7 +398,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 26,
               "Title": "IEventMemberService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IEventMemberService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IEventMemberService.cs",
@@ -410,7 +410,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 32,
               "Title": "EventMemberResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\EventMember\\EventMemberResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\EventMember\\EventMemberResponseDto.cs",
@@ -422,7 +422,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 31,
               "Title": "AddEventMemberDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\EventMember\\AddEventMemberDto.cs",
               "RelativeDocumentMoniker": "DTOs\\EventMember\\AddEventMemberDto.cs",
@@ -434,7 +434,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 24,
               "Title": "EventController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\EventController.cs",
               "RelativeDocumentMoniker": "Controllers\\EventController.cs",
@@ -446,7 +446,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "EventService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\EventService.cs",
               "RelativeDocumentMoniker": "Services\\EventService.cs",
@@ -458,7 +458,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 34,
               "Title": "EventResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Events\\EventResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Events\\EventResponseDto.cs",
@@ -470,7 +470,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 33,
               "Title": "CreateEventDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Events\\CreateEventDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Events\\CreateEventDto.cs",
@@ -482,7 +482,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -494,7 +494,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "AuthService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "Services\\AuthService.cs",
@@ -506,7 +506,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 25,
               "Title": "IAuthService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IAuthService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IAuthService.cs",
@@ -518,7 +518,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 1,
               "Title": "LoginResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Auth\\LoginResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Auth\\LoginResponseDto.cs",
@@ -526,11 +526,12 @@
               "RelativeToolTip": "DTOs\\Auth\\LoginResponseDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-19T16:58:19.645Z"
+              "WhenOpened": "2026-09-19T16:58:19.645Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "LoginDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Auth\\LoginDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Auth\\LoginDto.cs",
@@ -542,7 +543,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "RegisterDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Auth\\RegisterDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Auth\\RegisterDto.cs",
@@ -638,7 +639,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -650,7 +651,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -663,7 +664,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 29,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
@@ -675,15 +676,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 0,
               "Title": "Photo-Share-Platform.csproj",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Photo-Share-Platform.csproj",
               "RelativeDocumentMoniker": "Photo-Share-Platform.csproj",
               "ToolTip": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Photo-Share-Platform.csproj",
               "RelativeToolTip": "Photo-Share-Platform.csproj",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-09-12T08:43:51.056Z"
+              "WhenOpened": "2026-09-12T08:43:51.056Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
