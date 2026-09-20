@@ -1,0 +1,47 @@
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Build output
+bin/
+obj/
+
+# Test results
+TestResults/
+*.trx
+
+# ASP.NET / .NET
+*.dll
+*.pdb
+
+# Development configuration
+appsettings.Development.json
+
+# User secrets
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Rider / JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+packages/
+
+# Publish output
+publish/
