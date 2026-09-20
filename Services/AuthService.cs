@@ -1,126 +1,207 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using BCrypt.Net;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Photo_Share_Platform.Data;
+using Photo_Share_Platform.DTOs;
 using Photo_Share_Platform.DTOs.Auth;
 using Photo_Share_Platform.Interfaces;
 using Photo_Share_Platform.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
-namespace Photo_Share_Platform.Services
+namespace Photo_Share_Platform.Services;
+
+public class AuthService : IAuthService
 {
-    public class AuthService : IAuthService
+    private readonly AppDbContext _context;
+    private readonly IConfiguration _configuration;
+
+    public AuthService(
+        AppDbContext context,
+        IConfiguration configuration)
     {
-        private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
+        _context = context;
+        _configuration = configuration;
+    }
 
-        public AuthService(
-            AppDbContext context,
-            IConfiguration configuration)
+    // =========================
+    // REGISTER
+    // =========================
+    public async Task<LoginResponseDto> RegisterAsync(RegisterDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
-            _context = context;
-            _configuration = configuration;
+            throw new Exception("Name is required.");
         }
 
-        public async Task<LoginResponseDto> RegisterAsync(RegisterDto request)
+        if (string.IsNullOrWhiteSpace(request.Email))
         {
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
+            throw new Exception("Email is required.");
+        }
 
-            if (existingUser != null)
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            throw new Exception("Password is required.");
+        }
+
+        var existingUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (existingUser != null)
+        {
+            throw new Exception("Email is already registered.");
+        }
+
+        // Only these two roles are allowed.
+        var role = request.Role?.Trim();
+
+        if (role != "Admin" && role != "Team")
+        {
+            role = "Team";
+        }
+
+        // Admin registration requires the secret registration code.
+        if (role == "Admin")
+        {
+            var adminRegistrationCode =
+                _configuration["AdminRegistrationCode"];
+
+            if (string.IsNullOrWhiteSpace(adminRegistrationCode))
             {
-                throw new Exception("Email already exists.");
+                throw new Exception(
+                    "Admin registration is not configured."
+                );
             }
 
-            var user = new User
+            if (string.IsNullOrWhiteSpace(request.AdminCode) ||
+                request.AdminCode != adminRegistrationCode)
             {
-                Name = request.Name,
-                Email = request.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Role = "Team",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Users.Add(user);
-
-            await _context.SaveChangesAsync();
-
-            return new LoginResponseDto
-            {
-                Token = GenerateToken(user),
-                UserId = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role
-            };
-        }
-
-        public async Task<LoginResponseDto> LoginAsync(LoginDto request)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            if (user == null)
-            {
-                throw new Exception("Invalid email or password.");
+                throw new Exception(
+                    "Invalid Admin Registration Code."
+                );
             }
-
-            var passwordValid = BCrypt.Net.BCrypt.Verify(
-                request.Password,
-                user.PasswordHash
-            );
-
-            if (!passwordValid)
-            {
-                throw new Exception("Invalid email or password.");
-            }
-
-            return new LoginResponseDto
-            {
-                Token = GenerateToken(user),
-                UserId = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role
-            };
         }
 
-        private string GenerateToken(User user)
+        var user = new User
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
+            Name = request.Name.Trim(),
+            Email = request.Email.Trim().ToLower(),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(
+                request.Password
+            ),
+            Role = role,
+            CreatedAt = DateTime.UtcNow
+        };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _configuration["Jwt:Key"]!
-                )
-            );
+        _context.Users.Add(user);
 
-            var credentials = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256
-            );
+        await _context.SaveChangesAsync();
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    Convert.ToDouble(
-                        _configuration["Jwt:DurationInMinutes"]
-                    )
-                ),
-                signingCredentials: credentials
-            );
+        var token = GenerateJwtToken(user);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+        return new LoginResponseDto
+        {
+            Token = token,
+            UserId = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role
+        };
+    }
+
+    // =========================
+    // LOGIN
+    // =========================
+    public async Task<LoginResponseDto> LoginAsync(LoginDto request)
+    {
+        var email = request.Email.Trim().ToLower();
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user == null)
+        {
+            throw new Exception("Invalid email or password.");
         }
+
+        var passwordValid = BCrypt.Net.BCrypt.Verify(
+            request.Password,
+            user.PasswordHash
+        );
+
+        if (!passwordValid)
+        {
+            throw new Exception("Invalid email or password.");
+        }
+
+        var token = GenerateJwtToken(user);
+
+        return new LoginResponseDto
+        {
+            Token = token,
+            UserId = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role
+        };
+    }
+
+    // =========================
+    // JWT TOKEN
+    // =========================
+    private string GenerateJwtToken(User user)
+    {
+        var jwtKey = _configuration["Jwt:Key"];
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            throw new Exception("JWT key is not configured.");
+        }
+
+        var claims = new List<Claim>
+        {
+            new Claim(
+                ClaimTypes.NameIdentifier,
+                user.Id.ToString()
+            ),
+
+            new Claim(
+                ClaimTypes.Name,
+                user.Name
+            ),
+
+            new Claim(
+                ClaimTypes.Email,
+                user.Email
+            ),
+
+            new Claim(
+                ClaimTypes.Role,
+                user.Role
+            )
+        };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey)
+        );
+
+        var credentials = new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256
+        );
+
+        var duration = _configuration
+            .GetValue<int>("Jwt:DurationInMinutes");
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(duration),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler()
+            .WriteToken(token);
     }
 }
