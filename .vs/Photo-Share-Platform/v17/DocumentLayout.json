@@ -3,19 +3,23 @@
   "WorkspaceRootPath": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:photo-share-platform.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\photos\\photoresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -44,10 +48,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\galleries\\verifygallerypindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:dtos\\galleries\\verifygallerypindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B4D6E7E4-C88B-4797-86AE-1C8F3B1C7434}|Photo-Share-Platform.csproj|c:\\users\\manikandan a.r\\source\\repos\\photo-share-platform\\dtos\\galleries\\addgalleryphotosdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -177,11 +177,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 41,
+          "SelectedChildIndex": 39,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "VerifyGalleryPinDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Galleries\\VerifyGalleryPinDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Galleries\\VerifyGalleryPinDto.cs",
@@ -193,7 +193,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "GalleryController.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Controllers\\GalleryController.cs",
               "RelativeDocumentMoniker": "Controllers\\GalleryController.cs",
@@ -205,7 +205,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "GalleryService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\GalleryService.cs",
               "RelativeDocumentMoniker": "Services\\GalleryService.cs",
@@ -217,7 +217,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "IGalleryService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IGalleryService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IGalleryService.cs",
@@ -301,7 +301,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "PhotoResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Photos\\PhotoResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Photos\\PhotoResponseDto.cs",
@@ -337,7 +337,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "SupabaseStorageService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Services\\SupabaseStorageService.cs",
               "RelativeDocumentMoniker": "Services\\SupabaseStorageService.cs",
@@ -349,7 +349,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "IStorageService.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Interfaces\\IStorageService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IStorageService.cs",
@@ -361,13 +361,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "secrets.json",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
               "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
               "ToolTip": "C:\\Users\\Manikandan A.R\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
               "RelativeToolTip": "..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\333665af-e5ce-493a-8fec-2f1d2cc38745\\secrets.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-09-20T16:03:30.288Z",
               "EditorCaption": ""
@@ -518,7 +518,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "LoginResponseDto.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\DTOs\\Auth\\LoginResponseDto.cs",
               "RelativeDocumentMoniker": "DTOs\\Auth\\LoginResponseDto.cs",
@@ -526,8 +526,7 @@
               "RelativeToolTip": "DTOs\\Auth\\LoginResponseDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-19T16:58:19.645Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-19T16:58:19.645Z"
             },
             {
               "$type": "Document",
@@ -639,25 +638,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAEwAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAAAFUAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-19T15:46:05.435Z"
+              "WhenOpened": "2026-09-19T15:46:05.435Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-09-19T15:45:39.36Z",
               "EditorCaption": ""
@@ -676,7 +676,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Photo-Share-Platform.csproj",
               "DocumentMoniker": "C:\\Users\\Manikandan A.R\\source\\repos\\Photo-Share-Platform\\Photo-Share-Platform.csproj",
               "RelativeDocumentMoniker": "Photo-Share-Platform.csproj",
@@ -684,8 +684,7 @@
               "RelativeToolTip": "Photo-Share-Platform.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-09-12T08:43:51.056Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-12T08:43:51.056Z"
             },
             {
               "$type": "Bookmark",
