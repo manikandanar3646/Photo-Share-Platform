@@ -1,24 +1,66 @@
-# Logs
-logs
-*.log
+# =========================
+# Visual Studio / .NET
+# =========================
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+bin/
+obj/
+
+TestResults/
+*.trx
+
+*.dll
+*.pdb
+
+# =========================
+# Node / React / Vite
+# =========================
+node_modules/
+dist/
+dist-ssr/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.local
+.env.*.local
+secrets.json
 
-# Editor directories and files
-.vscode/*
+# =========================
+# Editors
+# =========================
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
+
+# =========================
+# OS files
+# =========================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.log
+
+# =========================
+# NuGet / Publish
+# =========================
+*.nupkg
+packages/
+publish/

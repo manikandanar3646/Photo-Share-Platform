@@ -1,0 +1,6 @@
+@Photo_Share_Platform_HostAddress = http://localhost:5177
+
+GET {{Photo_Share_Platform_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
