@@ -17,7 +17,7 @@ export async function addEventMember(
     `/events/${eventId}/members`,
     {
       userId: Number(userId),
-      eventRole
+      eventRole: eventRole
     }
   )
 

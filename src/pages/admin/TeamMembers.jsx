@@ -144,15 +144,18 @@ function TeamMembers() {
 
       await loadData()
     } catch (err) {
-      console.error('Failed to add member:', err)
+     console.error('Failed to add member:', err)
+     console.error('Status:', err?.response?.status)
+     console.error('Response:', err?.response?.data)
 
-      const message =
-        err?.response?.data?.message ||
-        'Failed to add team member.'
+     const message =
+     err?.response?.data?.message ||
+     err?.response?.data?.title ||
+     'Failed to add team member.'
 
-      setError(message)
+    setError(message)
     } finally {
-      setSaving(false)
+     setSaving(false)
     }
   }
 

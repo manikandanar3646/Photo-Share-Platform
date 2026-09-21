@@ -7,12 +7,7 @@ export async function uploadPhoto(eventId, file) {
 
   const response = await api.post(
     `/photos/upload/${eventId}`,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }
+    formData
   )
 
   return response.data

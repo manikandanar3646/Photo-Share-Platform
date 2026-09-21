@@ -29,7 +29,7 @@ function Dashboard() {
         if (!ignore) {
           setError(
             err.response?.data?.message ||
-            'Failed to load your assigned events.'
+              'Failed to load your assigned events.'
           )
         }
       } finally {
@@ -52,15 +52,39 @@ function Dashboard() {
   }
 
   function handleEventDetails(eventId) {
-    console.log('Opening event details:', eventId)
+    if (!eventId) {
+      return
+    }
 
     navigate(`/team/events/${eventId}`)
   }
 
   function handleUploadPhotos(eventId) {
-    console.log('Opening upload photos:', eventId)
+    if (!eventId) {
+      return
+    }
 
     navigate(`/team/events/${eventId}/upload`)
+  }
+
+  function handleUploadFromNavbar() {
+    if (events.length === 0) {
+      const section = document.getElementById('my-events')
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: 'smooth'
+        })
+      }
+
+      return
+    }
+
+    const firstEvent = events[0]
+
+    if (firstEvent?.id) {
+      navigate(`/team/events/${firstEvent.id}/upload`)
+    }
   }
 
   function formatDate(date) {
@@ -98,19 +122,10 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
+      {/* Header */}
       <header className="bg-white border-b border-gray-200">
-
         <div className="w-full px-8 py-5">
-
           <div className="flex items-center justify-between">
-
-            {/* Logo */}
-
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 PhotoShare
@@ -121,8 +136,6 @@ function Dashboard() {
               </p>
             </div>
 
-            {/* Logout */}
-
             <button
               type="button"
               onClick={handleLogout}
@@ -130,16 +143,10 @@ function Dashboard() {
             >
               Logout
             </button>
-
           </div>
 
-
-          {/* =================================================
-              NAVIGATION
-          ================================================= */}
-
+          {/* Navigation */}
           <nav className="flex items-center gap-3 mt-6">
-
             <button
               type="button"
               onClick={() => navigate('/team')}
@@ -166,37 +173,19 @@ function Dashboard() {
 
             <button
               type="button"
-              onClick={() => {
-                const section = document.getElementById('my-events')
-
-                if (section) {
-                  section.scrollIntoView({
-                    behavior: 'smooth'
-                  })
-                }
-              }}
+              onClick={handleUploadFromNavbar}
               className="relative z-50 px-5 py-2.5 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 cursor-pointer transition"
             >
               Upload Photos
             </button>
-
           </nav>
-
         </div>
-
       </header>
 
-
-      {/* =====================================================
-          MAIN
-      ===================================================== */}
-
+      {/* Main */}
       <main className="w-full px-8 py-8">
-
-        {/* Page Heading */}
-
+        {/* Page heading */}
         <div className="mb-8">
-
           <h2 className="text-3xl font-bold text-gray-900">
             Team Dashboard
           </h2>
@@ -204,17 +193,11 @@ function Dashboard() {
           <p className="mt-2 text-gray-500">
             View your assigned events and upload event photos.
           </p>
-
         </div>
 
-
-        {/* =====================================================
-            ERROR MESSAGE
-        ===================================================== */}
-
+        {/* Error */}
         {error && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4">
-
             <p className="font-medium text-red-700">
               {error}
             </p>
@@ -222,21 +205,13 @@ function Dashboard() {
             <p className="text-sm text-red-600 mt-1">
               Check your login session and backend connection.
             </p>
-
           </div>
         )}
 
-
-        {/* =====================================================
-            STATISTICS
-        ===================================================== */}
-
+        {/* Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-
           {/* Assigned Events */}
-
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-
             <p className="text-sm font-medium text-gray-500">
               Assigned Events
             </p>
@@ -248,14 +223,10 @@ function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Events assigned to you
             </p>
-
           </div>
 
-
-          {/* Photos */}
-
+          {/* Photos Uploaded */}
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-
             <p className="text-sm font-medium text-gray-500">
               Photos Uploaded
             </p>
@@ -267,14 +238,10 @@ function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Total photos uploaded
             </p>
-
           </div>
 
-
           {/* Active Events */}
-
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-
             <p className="text-sm font-medium text-gray-500">
               Active Events
             </p>
@@ -286,25 +253,16 @@ function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Upcoming events
             </p>
-
           </div>
-
         </div>
 
-
-        {/* =====================================================
-            MY EVENTS
-        ===================================================== */}
-
+        {/* My Events */}
         <section
           id="my-events"
           className="bg-white border border-gray-200 rounded-xl shadow-sm"
         >
-
-          {/* Section Header */}
-
+          {/* Section header */}
           <div className="px-6 py-5 border-b border-gray-200">
-
             <h3 className="text-xl font-semibold text-gray-900">
               My Events
             </h3>
@@ -312,38 +270,24 @@ function Dashboard() {
             <p className="text-sm text-gray-500 mt-1">
               Events assigned to you.
             </p>
-
           </div>
 
-
-          {/* =================================================
-              LOADING
-          ================================================= */}
-
+          {/* Loading */}
           {loading && (
             <div className="px-6 py-16 text-center">
-
               <div className="inline-block">
-
                 <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
 
                 <p className="text-gray-500 mt-4">
                   Loading your events...
                 </p>
-
               </div>
-
             </div>
           )}
 
-
-          {/* =================================================
-              NO EVENTS
-          ================================================= */}
-
+          {/* No events */}
           {!loading && !error && events.length === 0 && (
             <div className="px-6 py-16 text-center">
-
               <h4 className="text-lg font-semibold text-gray-900">
                 No events assigned
               </h4>
@@ -351,63 +295,39 @@ function Dashboard() {
               <p className="text-sm text-gray-500 mt-2">
                 You have not been assigned to any events yet.
               </p>
-
             </div>
           )}
 
-
-          {/* =================================================
-              EVENTS LIST
-          ================================================= */}
-
+          {/* Events */}
           {!loading && events.length > 0 && (
-
             <div className="divide-y divide-gray-200">
-
               {events.map((event) => (
-
                 <div
                   key={event.id}
                   className="px-6 py-7"
                 >
-
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-
-                    {/* =================================================
-                        EVENT INFORMATION
-                    ================================================= */}
-
+                    {/* Event information */}
                     <div className="min-w-0 flex-1">
-
                       <h4 className="text-xl font-semibold text-gray-900">
                         {event.name || 'Unnamed Event'}
                       </h4>
 
-
-                      {/* Date + Location */}
-
                       <div className="flex flex-wrap items-center gap-2 mt-3 text-sm text-gray-500">
-
                         <span>
                           {formatDate(event.eventDate)}
                         </span>
 
                         {event.location && (
                           <>
-                            <span>
-                              •
-                            </span>
+                            <span>•</span>
 
                             <span>
                               {event.location}
                             </span>
                           </>
                         )}
-
                       </div>
-
-
-                      {/* Description */}
 
                       {event.description && (
                         <p className="text-sm text-gray-500 mt-3 max-w-2xl">
@@ -415,61 +335,42 @@ function Dashboard() {
                         </p>
                       )}
 
-
-                      {/* Photo Count */}
-
                       <p className="text-sm font-medium text-gray-600 mt-3">
                         {Number(event.photoCount || 0)} photos uploaded
                       </p>
-
                     </div>
 
-
-                    {/* =================================================
-                        ACTION BUTTONS
-                    ================================================= */}
-
-                    <div
-                      className="relative z-10 flex flex-wrap items-center gap-3 shrink-0"
-                    >
-
-                      {/* EVENT DETAILS BUTTON */}
-
+                    {/* Actions */}
+                    <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
+                      {/* Event Details */}
                       <button
                         type="button"
-                        onClick={() => handleEventDetails(event.id)}
+                        onClick={() =>
+                          handleEventDetails(event.id)
+                        }
                         className="relative z-50 inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition"
                       >
                         Event Details
                       </button>
 
-
-                      {/* UPLOAD PHOTOS BUTTON */}
-
+                      {/* Upload Photos */}
                       <button
                         type="button"
-                        onClick={() => handleUploadPhotos(event.id)}
+                        onClick={() =>
+                          handleUploadPhotos(event.id)
+                        }
                         className="relative z-50 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 active:bg-black cursor-pointer transition"
                       >
                         Upload Photos
                       </button>
-
                     </div>
-
                   </div>
-
                 </div>
-
               ))}
-
             </div>
-
           )}
-
         </section>
-
       </main>
-
     </div>
   )
 }

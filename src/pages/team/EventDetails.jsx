@@ -1,48 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import { getEvents } from '../../services/eventService'
+import { getMyEvents } from '../../services/teamService'
 import { getEventPhotos } from '../../services/photoService'
 
 function EventDetails() {
   const { eventId } = useParams()
 
-  const [eventDetails, setEventDetails] =
-    useState(null)
-
-  const [eventPhotos, setEventPhotos] =
-    useState([])
-
-  const [loading, setLoading] =
-    useState(true)
-
-  const [loadingPhotos, setLoadingPhotos] =
-    useState(false)
-
-  const [error, setError] =
-    useState('')
+  const [eventDetails, setEventDetails] = useState(null)
+  const [eventPhotos, setEventPhotos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadingPhotos, setLoadingPhotos] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let cancelled = false
 
     async function loadEvent() {
       try {
-        const events = await getEvents()
+        setLoading(true)
+        setError('')
+
+        const events = await getMyEvents()
 
         const eventList = Array.isArray(events)
           ? events
           : []
 
-        const currentEvent =
-          eventList.find(
-            (event) =>
-              String(event.id) ===
-              String(eventId)
-          )
+        const currentEvent = eventList.find(
+          (event) =>
+            String(event.id) === String(eventId)
+        )
 
         if (!cancelled) {
           if (!currentEvent) {
-            setError('Event not found.')
+            setError('Event not found or you do not have access to this event.')
+            setEventDetails(null)
           } else {
             setEventDetails(currentEvent)
           }
@@ -50,15 +43,15 @@ function EventDetails() {
           setLoading(false)
         }
       } catch (err) {
-        console.error(
-          'Failed to load event:',
-          err
-        )
+        console.error('Failed to load team event:', err)
+        console.error('Status:', err?.response?.status)
+        console.error('Response:', err?.response?.data)
 
         if (!cancelled) {
           setError(
-            err.response?.data?.message ||
-            'Failed to load event.'
+            err?.response?.data?.message ||
+              err?.response?.data?.title ||
+              'Failed to load event.'
           )
 
           setLoading(false)
@@ -84,8 +77,7 @@ function EventDetails() {
       try {
         setLoadingPhotos(true)
 
-        const response =
-          await getEventPhotos(eventId)
+        const response = await getEventPhotos(eventId)
 
         if (!cancelled) {
           const data = Array.isArray(response)
@@ -113,15 +105,15 @@ function EventDetails() {
           setEventPhotos(mappedPhotos)
         }
       } catch (err) {
-        console.error(
-          'Failed to load photos:',
-          err
-        )
+        console.error('Failed to load photos:', err)
+        console.error('Status:', err?.response?.status)
+        console.error('Response:', err?.response?.data)
 
         if (!cancelled) {
           setError(
-            err.response?.data?.message ||
-            'Failed to load photos.'
+            err?.response?.data?.message ||
+              err?.response?.data?.title ||
+              'Failed to load photos.'
           )
         }
       } finally {
@@ -138,12 +130,31 @@ function EventDetails() {
     }
   }, [eventId])
 
+  function formatDate(date) {
+    if (!date) {
+      return 'Not specified'
+    }
+
+    const parsedDate = new Date(date)
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Not specified'
+    }
+
+    return parsedDate.toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100">
 
         <header className="bg-white border-b">
-
           <div className="w-full px-8 py-5">
 
             <h1 className="text-xl font-bold text-gray-900">
@@ -155,7 +166,6 @@ function EventDetails() {
             </p>
 
           </div>
-
         </header>
 
         <main className="w-full px-8 py-8">
@@ -175,7 +185,6 @@ function EventDetails() {
       <div className="min-h-screen bg-gray-100">
 
         <header className="bg-white border-b">
-
           <div className="w-full px-8 py-5">
 
             <h1 className="text-xl font-bold text-gray-900">
@@ -187,7 +196,6 @@ function EventDetails() {
             </p>
 
           </div>
-
         </header>
 
         <main className="w-full px-8 py-8">
@@ -195,6 +203,13 @@ function EventDetails() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-5 text-red-700">
             {error || 'Event not found.'}
           </div>
+
+          <Link
+            to="/team"
+            className="inline-block mt-5 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium hover:bg-gray-800 transition"
+          >
+            Back to Dashboard
+          </Link>
 
         </main>
 
@@ -205,7 +220,6 @@ function EventDetails() {
   return (
     <div className="min-h-screen bg-gray-100">
 
-      {/* Header */}
       <header className="bg-white border-b">
 
         <div className="w-full px-8 py-5">
@@ -237,10 +251,8 @@ function EventDetails() {
 
       </header>
 
-      {/* Main */}
       <main className="w-full px-8 py-8">
 
-        {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
 
           <div>
@@ -253,7 +265,7 @@ function EventDetails() {
             </Link>
 
             <h2 className="mt-3 text-2xl font-bold text-gray-900">
-              {eventDetails.name}
+              {eventDetails.name || 'Unnamed Event'}
             </h2>
 
             <p className="mt-1 text-gray-500">
@@ -277,7 +289,6 @@ function EventDetails() {
           </div>
         )}
 
-        {/* Event Information */}
         <div className="bg-white border rounded-xl p-6">
 
           <h3 className="text-lg font-semibold text-gray-900">
@@ -293,7 +304,7 @@ function EventDetails() {
               </p>
 
               <p className="mt-1 font-medium text-gray-900">
-                {eventDetails.name}
+                {eventDetails.name || 'Not specified'}
               </p>
 
             </div>
@@ -305,11 +316,7 @@ function EventDetails() {
               </p>
 
               <p className="mt-1 font-medium text-gray-900">
-                {eventDetails.eventDate
-                  ? new Date(
-                      eventDetails.eventDate
-                    ).toLocaleString()
-                  : 'Not specified'}
+                {formatDate(eventDetails.eventDate)}
               </p>
 
             </div>
@@ -321,8 +328,7 @@ function EventDetails() {
               </p>
 
               <p className="mt-1 font-medium text-gray-900">
-                {eventDetails.location ||
-                  'Not specified'}
+                {eventDetails.location || 'Not specified'}
               </p>
 
             </div>
@@ -365,9 +371,22 @@ function EventDetails() {
 
           </div>
 
+          {eventDetails.description && (
+            <div className="mt-6 pt-6 border-t">
+
+              <p className="text-sm text-gray-500">
+                Description
+              </p>
+
+              <p className="mt-1 text-gray-900">
+                {eventDetails.description}
+              </p>
+
+            </div>
+          )}
+
         </div>
 
-        {/* Upload Section */}
         <div className="bg-white border rounded-xl p-6 mt-6">
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -395,7 +414,6 @@ function EventDetails() {
 
         </div>
 
-        {/* Recent Photos */}
         <div className="bg-white border rounded-xl p-6 mt-6">
 
           <div className="flex items-center justify-between mb-6">
