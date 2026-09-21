@@ -1,47 +1,66 @@
-# Visual Studio
+# =========================
+# Visual Studio / .NET
+# =========================
 .vs/
 *.user
 *.userosscache
 *.suo
 *.userprefs
 
-# Build output
 bin/
 obj/
 
-# Test results
 TestResults/
 *.trx
 
-# ASP.NET / .NET
 *.dll
 *.pdb
 
-# Development configuration
-appsettings.Development.json
+# =========================
+# Node / React / Vite
+# =========================
+node_modules/
+dist/
+dist-ssr/
 
-# User secrets
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.local
+.env.*.local
 secrets.json
 
+# =========================
+# Editors
+# =========================
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# =========================
 # OS files
+# =========================
 .DS_Store
 Thumbs.db
 Desktop.ini
 
+# =========================
 # Temporary files
+# =========================
 *.tmp
 *.temp
 *.log
 
-# Rider / JetBrains
-.idea/
-
-# VS Code
-.vscode/
-
-# NuGet
+# =========================
+# NuGet / Publish
+# =========================
 *.nupkg
 packages/
-
-# Publish output
 publish/
