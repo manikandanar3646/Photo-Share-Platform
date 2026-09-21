@@ -34,21 +34,39 @@ namespace Photo_Share_Platform.Services
             if (user == null)
                 throw new Exception("User not found.");
 
+            if (user.Role != "Team")
+                throw new Exception("Only Team users can be assigned to events.");
+
+            var eventRole = request.EventRole?.Trim();
+
+            if (string.IsNullOrWhiteSpace(eventRole))
+                throw new Exception("Event role is required.");
+
+            if (!eventRole.Equals("Photographer", StringComparison.OrdinalIgnoreCase) &&
+                !eventRole.Equals("Editor", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception(
+                    "Invalid event role. Choose Photographer or Editor.");
+            }
+
             var alreadyMember = await _context.EventMembers
                 .AnyAsync(em =>
                     em.EventId == eventId &&
                     em.UserId == request.UserId);
 
             if (alreadyMember)
-                throw new Exception("User is already a member of this event.");
+                throw new Exception(
+                    "User is already a member of this event.");
 
             var member = new EventMember
             {
                 EventId = eventId,
-                UserId = request.UserId
+                UserId = request.UserId,
+                EventRole = eventRole
             };
 
             _context.EventMembers.Add(member);
+
             await _context.SaveChangesAsync();
 
             return new EventMemberResponseDto
@@ -57,7 +75,8 @@ namespace Photo_Share_Platform.Services
                 EventId = eventId,
                 UserId = user.Id,
                 UserName = user.Name,
-                UserEmail = user.Email
+                UserEmail = user.Email,
+                EventRole = member.EventRole
             };
         }
 
@@ -81,7 +100,8 @@ namespace Photo_Share_Platform.Services
                     EventId = em.EventId,
                     UserId = em.UserId,
                     UserName = em.User.Name,
-                    UserEmail = em.User.Email
+                    UserEmail = em.User.Email,
+                    EventRole = em.EventRole
                 })
                 .ToListAsync();
         }

@@ -80,7 +80,10 @@ namespace Photo_Share_Platform.Controllers
                     userId,
                     currentUserId);
 
-                return Ok(new { message = "Member removed successfully." });
+                return Ok(new
+                {
+                    message = "Member removed successfully."
+                });
             }
             catch (Exception ex)
             {

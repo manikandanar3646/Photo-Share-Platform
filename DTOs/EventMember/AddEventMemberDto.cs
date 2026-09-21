@@ -3,5 +3,7 @@
     public class AddEventMemberDto
     {
         public int UserId { get; set; }
+
+        public string EventRole { get; set; } = "Photographer";
     }
 }
