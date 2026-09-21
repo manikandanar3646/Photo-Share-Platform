@@ -14,6 +14,11 @@ import Galleries from './pages/admin/Galleries'
 import GalleryManagement from './pages/admin/GalleryManagement'
 
 // ================================
+// HOME PAGE
+// ================================
+import Home from './pages/Home'
+
+// ================================
 // TEAM PAGES
 // ================================
 import TeamDashboard from './pages/team/Dashboard'
@@ -32,21 +37,21 @@ import Gallery from './pages/customer/Gallery'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 
-
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
-        {/* ==================================================
-            ADMIN ROUTES
-        ================================================== */}
+        {/* ================================
+            HOME
+        ================================= */}
+        <Route path="/" element={<Home />} />
 
-        <Route
-          path="/admin"
-          element={<Dashboard />}
-        />
+
+        {/* ================================
+            ADMIN ROUTES
+        ================================= */}
+        <Route path="/admin" element={<Dashboard />} />
 
         <Route
           path="/admin/events"
@@ -78,7 +83,6 @@ function App() {
           element={<UploadPhotos />}
         />
 
-        {/* Alternative upload route */}
         <Route
           path="/admin/upload-photos"
           element={<UploadPhotos />}
@@ -95,50 +99,42 @@ function App() {
         />
 
 
-        {/* ==================================================
+        {/* ================================
             TEAM ROUTES
-        ================================================== */}
-
-        {/* Team Dashboard */}
+        ================================= */}
         <Route
           path="/team"
           element={<TeamDashboard />}
         />
 
-        {/* Team Event Details */}
         <Route
           path="/team/events/:eventId"
           element={<TeamEventDetails />}
         />
 
-        {/* Team Upload Photos */}
         <Route
           path="/team/events/:eventId/upload"
           element={<TeamUploadPhotos />}
         />
 
 
-        {/* ==================================================
+        {/* ================================
             CUSTOMER GALLERY ROUTES
-        ================================================== */}
-
-        {/* Enter gallery PIN */}
+        ================================= */}
         <Route
           path="/gallery/:galleryToken"
           element={<GalleryPin />}
         />
 
-        {/* Published gallery photos */}
         <Route
           path="/gallery/:galleryToken/photos"
           element={<Gallery />}
         />
 
 
-        {/* ==================================================
-            AUTHENTICATION ROUTES
-        ================================================== */}
-
+        {/* ================================
+            AUTH ROUTES
+        ================================= */}
         <Route
           path="/login"
           element={<Login />}
@@ -150,17 +146,15 @@ function App() {
         />
 
 
-        {/* ==================================================
+        {/* ================================
             FALLBACK
-        ================================================== */}
-
+        ================================= */}
         <Route
           path="*"
           element={<Login />}
         />
 
       </Routes>
-
     </BrowserRouter>
   )
 }

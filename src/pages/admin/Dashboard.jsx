@@ -187,6 +187,38 @@ function Dashboard() {
 
           </div>
 
+          {/* Quick Actions */}
+
+          <div className="mt-8 bg-white rounded-xl shadow p-6">
+            <div className="text-center mb-5">
+              <h2 className="text-xl font-bold text-gray-900">
+                Quick Actions
+              </h2>
+
+              <p className="text-gray-500 mt-1">
+                Quickly manage your photos and galleries.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4">
+
+              <Link
+                to="/admin/photos/upload"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Upload Photos
+              </Link>
+
+              <Link
+                to="/admin/galleries"
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+              >
+                Manage Galleries
+              </Link>
+
+            </div>
+          </div>
+
         </div>
       </main>
     </div>

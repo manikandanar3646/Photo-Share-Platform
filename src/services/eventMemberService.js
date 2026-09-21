@@ -8,18 +8,26 @@ export async function getEventMembers(eventId) {
   return response.data
 }
 
-export async function addEventMember(eventId, userId) {
+export async function addEventMember(
+  eventId,
+  userId,
+  eventRole
+) {
   const response = await api.post(
     `/events/${eventId}/members`,
     {
-      userId: Number(userId)
+      userId: Number(userId),
+      eventRole
     }
   )
 
   return response.data
 }
 
-export async function removeEventMember(eventId, userId) {
+export async function removeEventMember(
+  eventId,
+  userId
+) {
   const response = await api.delete(
     `/events/${eventId}/members/${userId}`
   )

@@ -18,6 +18,8 @@ function TeamMembers() {
 
   const [selectedEventId, setSelectedEventId] = useState('')
   const [selectedUserId, setSelectedUserId] = useState('')
+  const [selectedEventRole, setSelectedEventRole] =
+    useState('Photographer')
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -119,18 +121,26 @@ function TeamMembers() {
       return
     }
 
+    if (!selectedEventRole) {
+      setError('Please select an event role.')
+      return
+    }
+
     try {
       setSaving(true)
       setError('')
 
       await addEventMember(
         selectedEventId,
-        selectedUserId
+        selectedUserId,
+        selectedEventRole
       )
 
       setShowModal(false)
+
       setSelectedEventId('')
       setSelectedUserId('')
+      setSelectedEventRole('Photographer')
 
       await loadData()
     } catch (err) {
@@ -170,6 +180,7 @@ function TeamMembers() {
             <button
               onClick={() => {
                 setError('')
+                setSelectedEventRole('Photographer')
                 setShowModal(true)
               }}
               className="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -260,10 +271,10 @@ function TeamMembers() {
                         member.Email ??
                         '-'
 
-                      const role =
-                        user?.role ??
-                        user?.Role ??
-                        'Team'
+                      const eventRole =
+                        member.eventRole ??
+                        member.EventRole ??
+                        'Photographer'
 
                       return (
                         <tr
@@ -296,7 +307,7 @@ function TeamMembers() {
 
                           <td className="px-6 py-4">
                             <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
-                              {role}
+                              {eventRole}
                             </span>
                           </td>
 
@@ -371,7 +382,7 @@ function TeamMembers() {
 
                   {/* User */}
 
-                  <div className="mb-6">
+                  <div className="mb-5">
 
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Team Member
@@ -405,6 +416,33 @@ function TeamMembers() {
                         No Team users are available.
                       </p>
                     )}
+
+                  </div>
+
+                  {/* Event Role */}
+
+                  <div className="mb-6">
+
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Event Role
+                    </label>
+
+                    <select
+                      value={selectedEventRole}
+                      onChange={(e) =>
+                        setSelectedEventRole(e.target.value)
+                      }
+                      className="w-full border rounded-lg px-4 py-3"
+                      required
+                    >
+                      <option value="Photographer">
+                        Photographer
+                      </option>
+
+                      <option value="Editor">
+                        Editor
+                      </option>
+                    </select>
 
                   </div>
 
