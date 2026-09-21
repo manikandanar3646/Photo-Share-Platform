@@ -8,8 +8,6 @@ The platform allows administrators to create events, manage team members, collec
 
 **Website:** https://photo-share-platform-m1u3nqpu3-manikandanar3646s-projects.vercel.app
 
-**Backend API:** https://photo-share-platform-clah.onrender.com
-
 **API Documentation:** https://photo-share-platform-clah.onrender.com/swagger
 
 ## 📌 Project Overview
