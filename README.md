@@ -1,3 +1,15 @@
+## 👤 Demo Admin Access
+
+### Admin Registration Code
+
+```text
+PhotoShareAdmin2026
+```
+
+Use this code when registering a new Admin account.
+
+> **Note:** This is the **Admin Registration Code**, not the Admin login password. The Admin login password is the password selected during account registration.
+
 # Photo Share Platform
 
 A full-stack photo sharing and event management platform built for photography and event teams.
@@ -160,9 +172,3 @@ Customers do not require an account and access published galleries using a galle
 
 Passwords are hashed using BCrypt before being stored.
 
-## 👤 Demo Admin Access
-
-### Admin Registration Code
-
-```tex
-```
