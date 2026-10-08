@@ -6,8 +6,8 @@ export async function login(email, password) {
     password
   })
 
-  localStorage.setItem('token', response.data.token)
-  localStorage.setItem('user', JSON.stringify(response.data))
+  sessionStorage.setItem('token', response.data.token)
+  sessionStorage.setItem('user', JSON.stringify(response.data))
 
   return response.data
 }
@@ -31,12 +31,16 @@ export async function register(
 }
 
 export function logout() {
+  sessionStorage.removeItem('token')
+  sessionStorage.removeItem('user')
+
+  // Clear authentication data from the previous localStorage implementation.
   localStorage.removeItem('token')
   localStorage.removeItem('user')
 }
 
 export function getCurrentUser() {
-  const user = localStorage.getItem('user')
+  const user = sessionStorage.getItem('user')
 
   if (!user) {
     return null
@@ -50,9 +54,9 @@ export function getCurrentUser() {
 }
 
 export function getToken() {
-  return localStorage.getItem('token')
+  return sessionStorage.getItem('token')
 }
 
 export function isAuthenticated() {
-  return Boolean(localStorage.getItem('token'))
+  return Boolean(sessionStorage.getItem('token'))
 }
