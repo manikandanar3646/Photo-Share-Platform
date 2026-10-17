@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { uploadPhoto } from '../../services/photoService'
@@ -5,7 +6,13 @@ import { uploadPhoto } from '../../services/photoService'
 function UploadPhotos() {
   const { eventId } = useParams()
 
-  
+  const [files, setFiles] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const filesRef = useRef([])
 
   useEffect(() => {
     filesRef.current = files
@@ -20,16 +27,34 @@ function UploadPhotos() {
   }, [])
 
   function handleFileChange(event) {
-    const selectedFiles = Array.from(event.target.files)
+    const selectedFiles = Array.from(event.target.files || [])
+    event.target.value = ''
 
-    if (selectedFiles.length === 0) {
-      return
-    }
+    if (!selectedFiles.length) return
 
     setError('')
     setSuccess('')
 
-    const filesWithPreview = selectedFiles.map((file) => ({
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ]
+
+    const validFiles = []
+    const rejectedFiles = []
+
+    selectedFiles.forEach((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        rejectedFiles.push(`${file.name}: unsupported image format`)
+      } else if (file.size === 0 || file.size > 10 * 1024 * 1024) {
+        rejectedFiles.push(`${file.name}: file must be under 10 MB`)
+      } else {
+        validFiles.push(file)
+      }
+    })
+
+    const filesWithPreview = validFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file)
     }))
@@ -39,20 +64,20 @@ function UploadPhotos() {
       ...filesWithPreview
     ])
 
-    event.target.value = ''
+    if (rejectedFiles.length) {
+      setError(`Some files were skipped: ${rejectedFiles.join('; ')}.`)
+    }
   }
 
   function removeFile(index) {
     setFiles((currentFiles) => {
-      const itemToRemove = currentFiles[index]
+      const item = currentFiles[index]
 
-      if (itemToRemove?.preview) {
-        URL.revokeObjectURL(itemToRemove.preview)
+      if (item?.preview) {
+        URL.revokeObjectURL(item.preview)
       }
 
-      return currentFiles.filter(
-        (_, fileIndex) => fileIndex !== index
-      )
+      return currentFiles.filter((_, i) => i !== index)
     })
 
     setError('')
@@ -62,20 +87,21 @@ function UploadPhotos() {
   async function handleUpload(event) {
     event.preventDefault()
 
-    if (files.length === 0) {
-      setError('Please select at least one photo.')
-      return
-    }
+    setError('')
+    setSuccess('')
+    setUploadProgress(0)
 
     if (!eventId) {
       setError('Event ID is missing.')
       return
     }
 
+    if (files.length === 0) {
+      setError('Please select at least one photo.')
+      return
+    }
+
     setUploading(true)
-    setUploadProgress(0)
-    setError('')
-    setSuccess('')
 
     let uploadedCount = 0
 
@@ -91,9 +117,7 @@ function UploadPhotos() {
       }
 
       setSuccess(
-        `${uploadedCount} photo${
-          uploadedCount === 1 ? '' : 's'
-        } uploaded successfully.`
+        `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully.`
       )
 
       files.forEach((item) => {
@@ -106,17 +130,15 @@ function UploadPhotos() {
       console.error('Status:', err?.response?.status)
       console.error('Response:', err?.response?.data)
 
-      const message =
+      const reason =
         err?.response?.data?.message ||
         err?.response?.data?.title ||
-        'Failed to upload photo.'
+        'Photo upload failed. Please try again.'
 
       setError(
         uploadedCount > 0
-          ? `${uploadedCount} photo${
-              uploadedCount === 1 ? '' : 's'
-            } uploaded successfully, but another photo failed. ${message}`
-          : message
+          ? `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully, but another photo failed. ${reason}`
+          : reason
       )
     } finally {
       setUploading(false)
@@ -125,38 +147,28 @@ function UploadPhotos() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-
       <header className="bg-white border-b">
-        <div className="w-full px-8 py-5">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                PhotoShare
-              </h1>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Team Member Portal
-              </p>
-            </div>
-
-            <Link
-              to={`/team/events/${eventId}`}
-              className="px-5 py-2.5 rounded-lg border text-sm font-medium hover:bg-gray-50 transition"
-            >
-              Back to Event
-            </Link>
-
+        <div className="w-full px-8 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">
+              PhotoShare
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Team Member Portal
+            </p>
           </div>
 
+          <Link
+            to={`/team/events/${eventId}`}
+            className="px-5 py-2.5 rounded-lg border text-sm font-medium hover:bg-gray-50 transition"
+          >
+            Back to Event
+          </Link>
         </div>
       </header>
 
       <main className="w-full px-8 py-8">
-
         <div className="mb-8">
-
           <Link
             to={`/team/events/${eventId}`}
             className="text-sm text-gray-500 hover:text-black transition"
@@ -169,13 +181,15 @@ function UploadPhotos() {
           </h2>
 
           <p className="mt-1 text-gray-500">
-            Upload photos for Wedding Photography.
+            Upload photos for your assigned event.
           </p>
-
         </div>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4">
+          <div
+            role="alert"
+            className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4"
+          >
             <p className="text-sm font-medium text-red-700">
               {error}
             </p>
@@ -183,7 +197,10 @@ function UploadPhotos() {
         )}
 
         {success && (
-          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 px-6 py-4">
+          <div
+            role="status"
+            className="mb-6 rounded-xl border border-green-200 bg-green-50 px-6 py-4"
+          >
             <p className="text-sm font-medium text-green-700">
               {success}
             </p>
@@ -191,24 +208,20 @@ function UploadPhotos() {
         )}
 
         <form onSubmit={handleUpload}>
-
           <div className="bg-white border rounded-xl p-6">
-
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Event
+              Event ID
             </label>
 
             <input
               type="text"
-              value="Wedding Photography"
+              value={eventId || ''}
               disabled
               className="w-full px-4 py-3 border rounded-lg bg-gray-50 text-gray-500"
             />
-
           </div>
 
           <div className="bg-white border rounded-xl p-6 mt-6">
-
             <label
               htmlFor="team-photo-upload"
               className={`block border-2 border-dashed border-gray-300 rounded-xl p-12 text-center transition ${
@@ -217,17 +230,14 @@ function UploadPhotos() {
                   : 'cursor-pointer hover:bg-gray-50'
               }`}
             >
-
-              <div className="text-4xl mb-4">
-                📷
-              </div>
+              <div className="text-4xl mb-4">📷</div>
 
               <p className="font-medium text-gray-900">
                 Choose photos to upload
               </p>
 
               <p className="text-sm text-gray-500 mt-1">
-                You can select multiple JPG, PNG or WEBP images.
+                JPG, PNG or WEBP · Maximum 10 MB per photo
               </p>
 
               <span className="inline-block mt-5 px-5 py-2.5 rounded-lg border text-sm font-medium bg-white">
@@ -243,22 +253,16 @@ function UploadPhotos() {
                 disabled={uploading}
                 className="hidden"
               />
-
             </label>
-
           </div>
 
           {files.length > 0 && (
-
             <div className="bg-white border rounded-xl p-6 mt-6">
-
               <div className="flex items-center justify-between mb-5">
-
                 <div>
                   <h3 className="font-semibold text-gray-900">
                     Selected Photos
                   </h3>
-
                   <p className="text-sm text-gray-500 mt-1">
                     Review the photos before uploading.
                   </p>
@@ -267,20 +271,15 @@ function UploadPhotos() {
                 <span className="text-sm text-gray-500">
                   {files.length} files
                 </span>
-
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
                 {files.map((item, index) => (
-
                   <div
                     key={`${item.file.name}-${index}`}
                     className="border rounded-xl overflow-hidden bg-white"
                   >
-
                     <div className="relative">
-
                       <img
                         src={item.preview}
                         alt={item.file.name}
@@ -291,15 +290,14 @@ function UploadPhotos() {
                         type="button"
                         onClick={() => removeFile(index)}
                         disabled={uploading}
-                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 text-gray-700 hover:bg-white shadow-md flex items-center justify-center text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label={`Remove ${item.file.name}`}
+                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 text-gray-700 hover:bg-white shadow-md flex items-center justify-center text-lg disabled:opacity-50"
                       >
                         ×
                       </button>
-
                     </div>
 
                     <div className="p-4">
-
                       <p className="text-sm font-medium text-gray-900 truncate">
                         {item.file.name}
                       </p>
@@ -307,24 +305,16 @@ function UploadPhotos() {
                       <p className="text-xs text-gray-500 mt-1">
                         {(item.file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
-
                     </div>
-
                   </div>
-
                 ))}
-
               </div>
-
             </div>
-
           )}
 
           {uploading && (
             <div className="bg-white border rounded-xl p-6 mt-6">
-
               <div className="flex items-center justify-between mb-3">
-
                 <p className="text-sm font-medium text-gray-700">
                   Uploading photos...
                 </p>
@@ -332,29 +322,28 @@ function UploadPhotos() {
                 <p className="text-sm font-medium text-gray-900">
                   {uploadProgress}%
                 </p>
-
               </div>
 
-              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="w-full h-3 bg-gray-200 rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuenow={uploadProgress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <div
                   className="h-full bg-black transition-all duration-300"
-                  style={{
-                    width: `${uploadProgress}%`
-                  }}
+                  style={{ width: `${uploadProgress}%` }}
                 />
               </div>
-
             </div>
           )}
 
           <div className="flex items-center justify-between mt-6">
-
             <Link
               to={`/team/events/${eventId}`}
               className={`px-5 py-2.5 rounded-lg border text-sm font-medium bg-white hover:bg-gray-50 transition ${
-                uploading
-                  ? 'pointer-events-none opacity-50'
-                  : ''
+                uploading ? 'pointer-events-none opacity-50' : ''
               }`}
             >
               Cancel
@@ -369,13 +358,9 @@ function UploadPhotos() {
                 ? `Uploading ${uploadProgress}%`
                 : 'Upload Photos'}
             </button>
-
           </div>
-
         </form>
-
       </main>
-
     </div>
   )
 }
