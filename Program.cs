@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://localhost:5173",
-                "https://photo-share-platform-m1u3nqpu3-manikandanar3646s-projects.vercel.app"
+                "https://photo-share-platform-m1u3nqpu3-manikandanar3646s-projects.vercel.app",
                 "https://photo-share-platform.vercel.app"
             )
             .AllowAnyHeader()
