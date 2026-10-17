@@ -101,6 +101,9 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// Routing, CORS, authentication and authorization
+app.UseRouting();
+
 // CORS
 app.UseCors("Frontend");
 
