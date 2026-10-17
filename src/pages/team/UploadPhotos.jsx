@@ -1,414 +1,398 @@
-
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { uploadPhoto } from '../../services/photoService'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
-const ALLOWED_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-]
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 function UploadPhotos() {
   const { eventId } = useParams()
+  const inputRef = useRef(null)
 
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
+  const [completed, setCompleted] = useState(0)
+  const [results, setResults] = useState([])
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const filesRef = useRef([])
-  const uploadingRef = useRef(false)
-
-  useEffect(() => {
-    filesRef.current = files
-  }, [files])
-
   useEffect(() => {
     return () => {
-      filesRef.current.forEach((item) => {
-        URL.revokeObjectURL(item.preview)
-      })
+      files.forEach((item) => URL.revokeObjectURL(item.preview))
     }
+    // Preview URLs are managed when files are selected or removed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function clearPreviews(items) {
-    items.forEach((item) => {
-      if (item.preview) {
-        URL.revokeObjectURL(item.preview)
-      }
-    })
-  }
-
-  function handleFileChange(event) {
-    const selectedFiles = Array.from(event.target.files || [])
-
-    // Allow the same file to be selected again later.
-    event.target.value = ''
-
-    if (!selectedFiles.length || uploadingRef.current) {
-      return
-    }
-
-    setError('')
-    setSuccess('')
-
+  function handleFileSelection(event) {
+    const selected = Array.from(event.target.files ?? [])
     const validFiles = []
-    const rejectedFiles = []
+    const invalidMessages = []
 
-    selectedFiles.forEach((file) => {
+    selected.forEach((file) => {
       if (!ALLOWED_TYPES.includes(file.type)) {
-        rejectedFiles.push(`${file.name}: use JPG, PNG or WEBP`)
-      } else if (file.size === 0 || file.size > MAX_FILE_SIZE) {
-        rejectedFiles.push(`${file.name}: file must be greater than 0 and at most 10 MB`)
-      } else {
-        validFiles.push(file)
+        invalidMessages.push(`${file.name}: use JPG, PNG, or WEBP.`)
+        return
       }
+
+      if (file.size > MAX_FILE_SIZE) {
+        invalidMessages.push(`${file.name}: file size must be 10 MB or less.`)
+        return
+      }
+
+      validFiles.push({
+        id: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
+        file,
+        preview: URL.createObjectURL(file),
+      })
     })
 
-    const filesWithPreview = validFiles.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }))
+    setFiles((previous) => {
+      previous.forEach((item) => URL.revokeObjectURL(item.preview))
+      return validFiles
+    })
 
-    setFiles((currentFiles) => [
-      ...currentFiles,
-      ...filesWithPreview,
-    ])
-
-    if (rejectedFiles.length) {
-      setError(`Some files were skipped: ${rejectedFiles.join('; ')}.`)
-    }
+    setResults([])
+    setCompleted(0)
+    setSuccess('')
+    setError(invalidMessages.join(' '))
+    
+    // Allow choosing the same file again after removing or retrying.
+    if (inputRef.current) inputRef.current.value = ''
   }
 
-  function removeFile(index) {
-    if (uploadingRef.current) return
+  function removeFile(fileId) {
+    setFiles((previous) => {
+      const removed = previous.find((item) => item.id === fileId)
+      if (removed) URL.revokeObjectURL(removed.preview)
 
-    setFiles((currentFiles) => {
-      const item = currentFiles[index]
-
-      if (item?.preview) {
-        URL.revokeObjectURL(item.preview)
-      }
-
-      return currentFiles.filter((_, i) => i !== index)
+      return previous.filter((item) => item.id !== fileId)
     })
 
-    setError('')
+    setResults([])
     setSuccess('')
   }
 
-  async function handleUpload(event) {
-    event.preventDefault()
-
-    if (uploadingRef.current) return
-
-    setError('')
-    setSuccess('')
-    setUploadProgress(0)
-
+  async function handleUpload() {
     if (!eventId) {
-      setError('Event ID is missing. Return to your assigned event and try again.')
+      setError('The event ID is missing. Return to the event page and try again.')
       return
     }
 
-    if (!files.length) {
-      setError('Please select at least one photo.')
+    if (files.length === 0) {
+      setError('Please select at least one image before uploading.')
       return
     }
 
-    uploadingRef.current = true
     setUploading(true)
+    setCompleted(0)
+    setResults([])
+    setError('')
+    setSuccess('')
 
-    // Keep a stable snapshot for this upload operation.
-    const filesToUpload = [...files]
-    let uploadedCount = 0
+    const uploadResults = []
+    let succeeded = 0
 
-    try {
-      for (const item of filesToUpload) {
+    for (let index = 0; index < files.length; index += 1) {
+      const item = files[index]
+
+      try {
         await uploadPhoto(eventId, item.file)
 
-        uploadedCount += 1
+        succeeded += 1
+        uploadResults.push({
+          id: item.id,
+          name: item.file.name,
+          status: 'success',
+          message: 'Uploaded successfully',
+        })
+      } catch (err) {
+        const status = err.response?.status
+        let message =
+          err.response?.data?.message ||
+          err.response?.data?.title ||
+          'Upload failed. Please try again.'
 
-        setUploadProgress(
-          Math.round((uploadedCount / filesToUpload.length) * 100)
-        )
+        if (status === 401) {
+          message = 'Your session may have expired. Please sign in again.'
+        } else if (status === 403) {
+          message = 'You do not have permission to upload to this event.'
+        } else if (status === 413) {
+          message = 'The server rejected this file because it is too large.'
+        } else if (!err.response) {
+          message =
+            'Could not reach the server. Check your connection and try again.'
+        }
+
+        uploadResults.push({
+          id: item.id,
+          name: item.file.name,
+          status: 'error',
+          message,
+        })
       }
 
-      clearPreviews(filesToUpload)
-      setFiles([])
+      setCompleted(index + 1)
+      setResults([...uploadResults])
+    }
+
+    setUploading(false)
+
+    if (succeeded === files.length) {
       setSuccess(
-        `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully.`
+        `Successfully uploaded ${succeeded} photo${succeeded === 1 ? '' : 's'}.`
       )
-    } catch (err) {
-      console.error('Team photo upload failed:', err)
-      console.error('HTTP status:', err?.response?.status)
-      console.error('API response:', err?.response?.data)
+      setFiles((previous) => {
+        previous.forEach((item) => URL.revokeObjectURL(item.preview))
+        return []
+      })
+    } else if (succeeded > 0) {
+      setError(
+        `${succeeded} of ${files.length} photos uploaded. Check the results below and retry the failed files.`
+      )
 
-      const status = err?.response?.status
-      const apiMessage =
-        err?.response?.data?.message ||
-        err?.response?.data?.title
-
-      let reason = apiMessage || 'Photo upload failed. Please try again.'
-
-      if (!err?.response) {
-        reason =
-          'Could not reach the upload API. Check your connection and try again.'
-      } else if (status === 401) {
-        reason = 'Your session may have expired. Sign in again and retry.'
-      } else if (status === 403) {
-        reason = 'You may not have permission to upload photos to this event.'
-      } else if (status === 413) {
-        reason = 'The server rejected the file because it is too large.'
-      }
-
-      if (uploadedCount > 0) {
-        // Remove only successfully uploaded items; retain failed and
-        // not-yet-uploaded items so they can be retried.
-        const remainingFiles = filesToUpload.slice(uploadedCount)
-        const uploadedFiles = filesToUpload.slice(0, uploadedCount)
-
-        clearPreviews(uploadedFiles)
-        setFiles(remainingFiles)
-
-        setError(
-          `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully. The remaining ${remainingFiles.length} photo${remainingFiles.length === 1 ? '' : 's'} were not confirmed as uploaded. ${reason}`
+      // Keep only failed files selected so the user can retry them.
+      setFiles((previous) =>
+        previous.filter((item) =>
+          uploadResults.some(
+            (result) => result.id === item.id && result.status === 'error'
+          )
         )
-      } else {
-        setError(reason)
-      }
-    } finally {
-      uploadingRef.current = false
-      setUploading(false)
+      )
+    } else {
+      setError(
+        'No photos were uploaded successfully. Check the results below and try again.'
+      )
     }
   }
 
+  const progress = files.length
+    ? Math.round((completed / files.length) * 100)
+    : 0
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b">
-        <div className="w-full px-4 sm:px-8 py-5 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              PhotoShare
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Team Member Portal
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <Link to="/team" className="text-xl font-bold text-indigo-700">
+            PhotoShare <span className="font-medium text-slate-500">Team</span>
+          </Link>
 
           <Link
             to={`/team/events/${eventId}`}
-            className="px-4 py-2.5 rounded-lg border text-sm font-medium hover:bg-gray-50 transition"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-100"
           >
-            Back to Event
+            Back to event
           </Link>
         </div>
       </header>
 
-      <main className="w-full px-4 sm:px-8 py-8">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Link
-            to={`/team/events/${eventId}`}
-            className="text-sm text-gray-500 hover:text-black transition"
-          >
-            ← Back to Event
-          </Link>
-
-          <h2 className="mt-3 text-2xl font-bold text-gray-900">
-            Upload Photos
-          </h2>
-
-          <p className="mt-1 text-gray-500">
-            Upload photos for your assigned event.
+          <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
+            Team workspace
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">
+            Upload event photos
+          </h1>
+          <p className="mt-2 text-slate-600">
+            Select JPG, PNG, or WEBP images up to 10 MB each.
           </p>
         </div>
 
-        {error && (
-          <div
-            role="alert"
-            className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4"
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className="flex min-h-52 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 px-5 py-8 text-center transition hover:border-indigo-500 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <p className="text-sm font-medium text-red-700">
+            <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-2xl text-indigo-700">
+              +
+            </span>
+            <span className="font-semibold text-slate-900">
+              Choose photos from your device
+            </span>
+            <span className="mt-2 text-sm text-slate-500">
+              JPG, PNG, WEBP · Maximum 10 MB per file
+            </span>
+          </button>
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            onChange={handleFileSelection}
+            disabled={uploading}
+            className="hidden"
+          />
+
+          {error && (
+            <div
+              role="alert"
+              className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
               {error}
-            </p>
-          </div>
-        )}
+            </div>
+          )}
 
-        {success && (
-          <div
-            role="status"
-            className="mb-6 rounded-xl border border-green-200 bg-green-50 px-6 py-4"
-          >
-            <p className="text-sm font-medium text-green-700">
+          {success && (
+            <div
+              role="status"
+              className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800"
+            >
               {success}
-            </p>
-          </div>
-        )}
-
-        <form onSubmit={handleUpload}>
-          <div className="bg-white border rounded-xl p-6">
-            <label
-              htmlFor="team-event-id"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Event ID
-            </label>
-
-            <input
-              id="team-event-id"
-              type="text"
-              value={eventId || ''}
-              disabled
-              className="w-full px-4 py-3 border rounded-lg bg-gray-50 text-gray-500"
-            />
-          </div>
-
-          <div className="bg-white border rounded-xl p-6 mt-6">
-            <label
-              htmlFor="team-photo-upload"
-              className={`block border-2 border-dashed border-gray-300 rounded-xl p-8 sm:p-12 text-center transition ${
-                uploading
-                  ? 'cursor-not-allowed opacity-60'
-                  : 'cursor-pointer hover:bg-gray-50'
-              }`}
-            >
-              <div className="text-4xl mb-4">📷</div>
-
-              <p className="font-medium text-gray-900">
-                Choose photos to upload
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                JPG, PNG or WEBP · Maximum 10 MB per photo
-              </p>
-
-              <span className="inline-block mt-5 px-5 py-2.5 rounded-lg border text-sm font-medium bg-white">
-                Browse Photos
-              </span>
-
-              <input
-                id="team-photo-upload"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-                onChange={handleFileChange}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
+              <div className="mt-2">
+                <Link
+                  to={`/team/events/${eventId}`}
+                  className="font-semibold underline"
+                >
+                  View event photos
+                </Link>
+              </div>
+            </div>
+          )}
 
           {files.length > 0 && (
-            <div className="bg-white border rounded-xl p-6 mt-6">
-              <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    Selected Photos
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Review the photos before uploading.
-                  </p>
-                </div>
-
-                <span className="text-sm text-gray-500 whitespace-nowrap">
-                  {files.length} file{files.length === 1 ? '' : 's'}
+            <div className="mt-8">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold">
+                  Selected photos ({files.length})
+                </h2>
+                <span className="text-sm text-slate-500">
+                  {(
+                    files.reduce((sum, item) => sum + item.file.size, 0) /
+                    (1024 * 1024)
+                  ).toFixed(2)}{' '}
+                  MB total
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {files.map((item, index) => (
-                  <div
-                    key={`${item.file.name}-${index}`}
-                    className="border rounded-xl overflow-hidden bg-white"
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {files.map((item) => (
+                  <article
+                    key={item.id}
+                    className="overflow-hidden rounded-xl border border-slate-200 bg-white"
                   >
-                    <div className="relative">
-                      <img
-                        src={item.preview}
-                        alt={item.file.name}
-                        className="w-full h-52 object-cover"
-                      />
+                    <img
+                      src={item.preview}
+                      alt={item.file.name}
+                      className="aspect-square w-full object-cover"
+                    />
+
+                    <div className="p-3">
+                      <p className="truncate text-sm font-semibold">
+                        {item.file.name}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {(item.file.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
 
                       <button
                         type="button"
-                        onClick={() => removeFile(index)}
+                        onClick={() => removeFile(item.id)}
                         disabled={uploading}
-                        aria-label={`Remove ${item.file.name}`}
-                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 text-gray-700 hover:bg-white shadow-md flex items-center justify-center text-lg disabled:opacity-50"
+                        className="mt-3 text-sm font-semibold text-red-600 hover:text-red-700 disabled:opacity-50"
                       >
-                        ×
+                        Remove
                       </button>
                     </div>
-
-                    <div className="p-4">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {item.file.name}
-                      </p>
-
-                      <p className="text-xs text-gray-500 mt-1">
-                        {(item.file.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                    </div>
-                  </div>
+                  </article>
                 ))}
               </div>
+
+              {uploading && (
+                <div className="mt-6">
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="font-medium text-slate-700">
+                      Uploading photos…
+                    </span>
+                    <span className="text-slate-500">
+                      {completed} / {files.length}
+                    </span>
+                  </div>
+
+                  <div
+                    className="h-2 overflow-hidden rounded-full bg-slate-200"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={files.length}
+                    aria-valuenow={completed}
+                    aria-label="Photo upload progress"
+                  >
+                    <div
+                      className="h-full rounded-full bg-indigo-600 transition-all"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFiles((previous) => {
+                      previous.forEach((item) => URL.revokeObjectURL(item.preview))
+                      return []
+                    })
+                    setError('')
+                    setSuccess('')
+                    setResults([])
+                    setCompleted(0)
+                  }}
+                  disabled={uploading}
+                  className="rounded-xl border border-slate-300 px-5 py-3 font-semibold hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Clear selection
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleUpload}
+                  disabled={uploading || files.length === 0}
+                  className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {uploading ? 'Uploading…' : `Upload ${files.length} photo${files.length === 1 ? '' : 's'}`}
+                </button>
+              </div>
             </div>
           )}
 
-          {uploading && (
-            <div className="bg-white border rounded-xl p-6 mt-6">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-gray-700">
-                  Uploading photos...
-                </p>
-
-                <p className="text-sm font-medium text-gray-900">
-                  {uploadProgress}%
-                </p>
-              </div>
-
-              <div
-                className="w-full h-3 bg-gray-200 rounded-full overflow-hidden"
-                role="progressbar"
-                aria-valuenow={uploadProgress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div
-                  className="h-full bg-black transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
+          {results.length > 0 && (
+            <div className="mt-8 border-t border-slate-200 pt-6">
+              <h2 className="mb-4 text-lg font-bold">Upload results</h2>
+              <ul className="space-y-3">
+                {results.map((result) => (
+                  <li
+                    key={result.id}
+                    className="flex flex-col gap-1 rounded-lg border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="break-all text-sm font-medium">
+                      {result.name}
+                    </span>
+                    <span
+                      className={
+                        result.status === 'success'
+                          ? 'text-sm font-medium text-green-700'
+                          : 'text-sm font-medium text-red-700'
+                      }
+                    >
+                      {result.message}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
+        </section>
 
-          <div className="flex items-center justify-between mt-6 gap-4">
-            <Link
-              to={`/team/events/${eventId}`}
-              onClick={(event) => {
-                if (uploading) event.preventDefault()
-              }}
-              className={`px-5 py-2.5 rounded-lg border text-sm font-medium bg-white hover:bg-gray-50 transition ${
-                uploading ? 'pointer-events-none opacity-50' : ''
-              }`}
-            >
-              Cancel
-            </Link>
-
-            <button
-              type="submit"
-              disabled={uploading || files.length === 0}
-              className="px-6 py-3 rounded-lg bg-black text-white text-sm font-medium hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {uploading
-                ? `Uploading ${uploadProgress}%`
-                : 'Upload Photos'}
-            </button>
-          </div>
-        </form>
+        <p className="mt-5 text-sm text-slate-500">
+          Uploads are sent to the existing backend API. Keep this page open until
+          the upload process finishes.
+        </p>
       </main>
     </div>
   )
