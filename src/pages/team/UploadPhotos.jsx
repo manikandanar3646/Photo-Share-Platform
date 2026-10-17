@@ -3,6 +3,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { uploadPhoto } from '../../services/photoService'
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024
+
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]
+
 function UploadPhotos() {
   const { eventId } = useParams()
 
@@ -13,6 +21,7 @@ function UploadPhotos() {
   const [success, setSuccess] = useState('')
 
   const filesRef = useRef([])
+  const uploadingRef = useRef(false)
 
   useEffect(() => {
     filesRef.current = files
@@ -26,29 +35,35 @@ function UploadPhotos() {
     }
   }, [])
 
+  function clearPreviews(items) {
+    items.forEach((item) => {
+      if (item.preview) {
+        URL.revokeObjectURL(item.preview)
+      }
+    })
+  }
+
   function handleFileChange(event) {
     const selectedFiles = Array.from(event.target.files || [])
+
+    // Allow the same file to be selected again later.
     event.target.value = ''
 
-    if (!selectedFiles.length) return
+    if (!selectedFiles.length || uploadingRef.current) {
+      return
+    }
 
     setError('')
     setSuccess('')
-
-    const allowedTypes = [
-      'image/jpeg',
-      'image/png',
-      'image/webp'
-    ]
 
     const validFiles = []
     const rejectedFiles = []
 
     selectedFiles.forEach((file) => {
-      if (!allowedTypes.includes(file.type)) {
-        rejectedFiles.push(`${file.name}: unsupported image format`)
-      } else if (file.size === 0 || file.size > 10 * 1024 * 1024) {
-        rejectedFiles.push(`${file.name}: file must be under 10 MB`)
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        rejectedFiles.push(`${file.name}: use JPG, PNG or WEBP`)
+      } else if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+        rejectedFiles.push(`${file.name}: file must be greater than 0 and at most 10 MB`)
       } else {
         validFiles.push(file)
       }
@@ -56,12 +71,12 @@ function UploadPhotos() {
 
     const filesWithPreview = validFiles.map((file) => ({
       file,
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
     }))
 
     setFiles((currentFiles) => [
       ...currentFiles,
-      ...filesWithPreview
+      ...filesWithPreview,
     ])
 
     if (rejectedFiles.length) {
@@ -70,6 +85,8 @@ function UploadPhotos() {
   }
 
   function removeFile(index) {
+    if (uploadingRef.current) return
+
     setFiles((currentFiles) => {
       const item = currentFiles[index]
 
@@ -87,60 +104,85 @@ function UploadPhotos() {
   async function handleUpload(event) {
     event.preventDefault()
 
+    if (uploadingRef.current) return
+
     setError('')
     setSuccess('')
     setUploadProgress(0)
 
     if (!eventId) {
-      setError('Event ID is missing.')
+      setError('Event ID is missing. Return to your assigned event and try again.')
       return
     }
 
-    if (files.length === 0) {
+    if (!files.length) {
       setError('Please select at least one photo.')
       return
     }
 
+    uploadingRef.current = true
     setUploading(true)
 
+    // Keep a stable snapshot for this upload operation.
+    const filesToUpload = [...files]
     let uploadedCount = 0
 
     try {
-      for (const item of files) {
+      for (const item of filesToUpload) {
         await uploadPhoto(eventId, item.file)
 
         uploadedCount += 1
 
         setUploadProgress(
-          Math.round((uploadedCount / files.length) * 100)
+          Math.round((uploadedCount / filesToUpload.length) * 100)
         )
       }
 
+      clearPreviews(filesToUpload)
+      setFiles([])
       setSuccess(
         `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully.`
       )
-
-      files.forEach((item) => {
-        URL.revokeObjectURL(item.preview)
-      })
-
-      setFiles([])
     } catch (err) {
-      console.error('Photo upload failed:', err)
-      console.error('Status:', err?.response?.status)
-      console.error('Response:', err?.response?.data)
+      console.error('Team photo upload failed:', err)
+      console.error('HTTP status:', err?.response?.status)
+      console.error('API response:', err?.response?.data)
 
-      const reason =
+      const status = err?.response?.status
+      const apiMessage =
         err?.response?.data?.message ||
-        err?.response?.data?.title ||
-        'Photo upload failed. Please try again.'
+        err?.response?.data?.title
 
-      setError(
-        uploadedCount > 0
-          ? `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully, but another photo failed. ${reason}`
-          : reason
-      )
+      let reason = apiMessage || 'Photo upload failed. Please try again.'
+
+      if (!err?.response) {
+        reason =
+          'Could not reach the upload API. Check your connection and try again.'
+      } else if (status === 401) {
+        reason = 'Your session may have expired. Sign in again and retry.'
+      } else if (status === 403) {
+        reason = 'You may not have permission to upload photos to this event.'
+      } else if (status === 413) {
+        reason = 'The server rejected the file because it is too large.'
+      }
+
+      if (uploadedCount > 0) {
+        // Remove only successfully uploaded items; retain failed and
+        // not-yet-uploaded items so they can be retried.
+        const remainingFiles = filesToUpload.slice(uploadedCount)
+        const uploadedFiles = filesToUpload.slice(0, uploadedCount)
+
+        clearPreviews(uploadedFiles)
+        setFiles(remainingFiles)
+
+        setError(
+          `${uploadedCount} photo${uploadedCount === 1 ? '' : 's'} uploaded successfully. The remaining ${remainingFiles.length} photo${remainingFiles.length === 1 ? '' : 's'} were not confirmed as uploaded. ${reason}`
+        )
+      } else {
+        setError(reason)
+      }
     } finally {
+      uploadingRef.current = false
       setUploading(false)
     }
   }
@@ -148,7 +190,7 @@ function UploadPhotos() {
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b">
-        <div className="w-full px-8 py-5 flex items-center justify-between">
+        <div className="w-full px-4 sm:px-8 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
               PhotoShare
@@ -160,14 +202,14 @@ function UploadPhotos() {
 
           <Link
             to={`/team/events/${eventId}`}
-            className="px-5 py-2.5 rounded-lg border text-sm font-medium hover:bg-gray-50 transition"
+            className="px-4 py-2.5 rounded-lg border text-sm font-medium hover:bg-gray-50 transition"
           >
             Back to Event
           </Link>
         </div>
       </header>
 
-      <main className="w-full px-8 py-8">
+      <main className="w-full px-4 sm:px-8 py-8">
         <div className="mb-8">
           <Link
             to={`/team/events/${eventId}`}
@@ -209,11 +251,15 @@ function UploadPhotos() {
 
         <form onSubmit={handleUpload}>
           <div className="bg-white border rounded-xl p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="team-event-id"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Event ID
             </label>
 
             <input
+              id="team-event-id"
               type="text"
               value={eventId || ''}
               disabled
@@ -224,7 +270,7 @@ function UploadPhotos() {
           <div className="bg-white border rounded-xl p-6 mt-6">
             <label
               htmlFor="team-photo-upload"
-              className={`block border-2 border-dashed border-gray-300 rounded-xl p-12 text-center transition ${
+              className={`block border-2 border-dashed border-gray-300 rounded-xl p-8 sm:p-12 text-center transition ${
                 uploading
                   ? 'cursor-not-allowed opacity-60'
                   : 'cursor-pointer hover:bg-gray-50'
@@ -258,7 +304,7 @@ function UploadPhotos() {
 
           {files.length > 0 && (
             <div className="bg-white border rounded-xl p-6 mt-6">
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
                   <h3 className="font-semibold text-gray-900">
                     Selected Photos
@@ -268,8 +314,8 @@ function UploadPhotos() {
                   </p>
                 </div>
 
-                <span className="text-sm text-gray-500">
-                  {files.length} files
+                <span className="text-sm text-gray-500 whitespace-nowrap">
+                  {files.length} file{files.length === 1 ? '' : 's'}
                 </span>
               </div>
 
@@ -339,9 +385,12 @@ function UploadPhotos() {
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center justify-between mt-6 gap-4">
             <Link
               to={`/team/events/${eventId}`}
+              onClick={(event) => {
+                if (uploading) event.preventDefault()
+              }}
               className={`px-5 py-2.5 rounded-lg border text-sm font-medium bg-white hover:bg-gray-50 transition ${
                 uploading ? 'pointer-events-none opacity-50' : ''
               }`}
