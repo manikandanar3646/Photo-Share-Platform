@@ -5,13 +5,7 @@ import { uploadPhoto } from '../../services/photoService'
 function UploadPhotos() {
   const { eventId } = useParams()
 
-  const [files, setFiles] = useState([])
-  const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-
-  const filesRef = useRef([])
+  
 
   useEffect(() => {
     filesRef.current = files
