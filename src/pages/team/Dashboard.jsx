@@ -1,17 +1,41 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getMyEvents } from '../../services/teamService'
 import { logout } from '../../services/authService'
 
+function formatDate(value) {
+  if (!value) return 'Date not available'
+
+  const date = new Date(value)
+  return Number.isNaN(date.getTime())
+    ? 'Date not available'
+    : date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+}
+
+function getEventId(event) {
+  return event?.id ?? event?.eventId
+}
+
+function getEventName(event) {
+  return event?.name ?? event?.eventName ?? event?.title ?? 'Untitled event'
+}
+
+function getPhotoCount(event) {
+  return Number(event?.photoCount ?? event?.photosCount ?? event?.totalPhotos ?? 0)
+}
+
 function Dashboard() {
   const navigate = useNavigate()
-
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    let ignore = false
+    let active = true
 
     async function loadEvents() {
       try {
@@ -20,29 +44,26 @@ function Dashboard() {
 
         const data = await getMyEvents()
 
-        if (!ignore) {
-          setEvents(Array.isArray(data) ? data : [])
+        if (active) {
+          setEvents(Array.isArray(data) ? data : data?.events ?? [])
         }
       } catch (err) {
-        console.error('Failed to load team events:', err)
-
-        if (!ignore) {
+        if (active) {
           setError(
             err.response?.data?.message ||
-              'Failed to load your assigned events.'
+              err.response?.data?.title ||
+              'Unable to load your assigned events. Please try again.'
           )
         }
       } finally {
-        if (!ignore) {
-          setLoading(false)
-        }
+        if (active) setLoading(false)
       }
     }
 
     loadEvents()
 
     return () => {
-      ignore = true
+      active = false
     }
   }, [])
 
@@ -51,322 +72,185 @@ function Dashboard() {
     navigate('/login')
   }
 
-  function handleEventDetails(eventId) {
-    if (!eventId) {
-      return
-    }
-
-    navigate(`/team/events/${eventId}`)
-  }
-
-  function handleUploadPhotos(eventId) {
-    if (!eventId) {
-      return
-    }
-
-    navigate(`/team/events/${eventId}/upload`)
-  }
-
-  function handleUploadFromNavbar() {
-    if (events.length === 0) {
-      const section = document.getElementById('my-events')
-
-      if (section) {
-        section.scrollIntoView({
-          behavior: 'smooth'
-        })
-      }
-
-      return
-    }
-
-    const firstEvent = events[0]
-
-    if (firstEvent?.id) {
-      navigate(`/team/events/${firstEvent.id}/upload`)
-    }
-  }
-
-  function formatDate(date) {
-    if (!date) {
-      return 'Date not available'
-    }
-
-    const parsedDate = new Date(date)
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      return 'Date not available'
-    }
-
-    return parsedDate.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
-
   const totalPhotos = events.reduce(
-    (total, event) => total + Number(event.photoCount || 0),
+    (total, event) => total + getPhotoCount(event),
     0
   )
 
-  const activeEvents = events.filter((event) => {
-    if (!event.eventDate) {
-      return false
-    }
+  const upcomingEvents = events.filter((event) => {
+    const value = event?.date ?? event?.eventDate ?? event?.startDate
+    if (!value) return false
 
-    const eventDate = new Date(event.eventDate)
+    const date = new Date(value)
+    return !Number.isNaN(date.getTime()) && date >= new Date()
+  }).length
 
-    return eventDate >= new Date()
-  })
+  const firstEventId = events.length ? getEventId(events[0]) : null
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="w-full px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                PhotoShare
-              </h1>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <Link to="/team" className="text-xl font-bold tracking-tight text-indigo-700">
+            PhotoShare <span className="font-medium text-slate-500">Team</span>
+          </Link>
 
-              <p className="text-sm text-gray-500 mt-1">
-                Team Member Portal
-              </p>
-            </div>
-
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm text-slate-500 sm:inline">
+              Team workspace
+            </span>
             <button
               type="button"
               onClick={handleLogout}
-              className="relative z-50 px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-100"
             >
-              Logout
+              Log out
             </button>
           </div>
-
-          {/* Navigation */}
-          <nav className="flex items-center gap-3 mt-6">
-            <button
-              type="button"
-              onClick={() => navigate('/team')}
-              className="relative z-50 px-5 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 cursor-pointer transition"
-            >
-              Dashboard
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const section = document.getElementById('my-events')
-
-                if (section) {
-                  section.scrollIntoView({
-                    behavior: 'smooth'
-                  })
-                }
-              }}
-              className="relative z-50 px-5 py-2.5 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 cursor-pointer transition"
-            >
-              My Events
-            </button>
-
-            <button
-              type="button"
-              onClick={handleUploadFromNavbar}
-              className="relative z-50 px-5 py-2.5 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 cursor-pointer transition"
-            >
-              Upload Photos
-            </button>
-          </nav>
         </div>
       </header>
 
-      {/* Main */}
-      <main className="w-full px-8 py-8">
-        {/* Page heading */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Team Dashboard
-          </h2>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
+              Team dashboard
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">
+              Welcome back
+            </h1>
+            <p className="mt-2 text-slate-600">
+              Manage your assigned events and upload event photos.
+            </p>
+          </div>
 
-          <p className="mt-2 text-gray-500">
-            View your assigned events and upload event photos.
-          </p>
+          {firstEventId != null && (
+            <Link
+              to={`/team/events/${firstEventId}/upload`}
+              className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-700"
+            >
+              Upload photos
+            </Link>
+          )}
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-6 py-4">
-            <p className="font-medium text-red-700">
-              {error}
-            </p>
-
-            <p className="text-sm text-red-600 mt-1">
-              Check your login session and backend connection.
-            </p>
-          </div>
-        )}
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* Assigned Events */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
-              Assigned Events
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-gray-900">
-              {loading ? '...' : events.length}
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Events assigned to you
+        <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Assigned events</p>
+            <p className="mt-3 text-3xl font-bold">
+              {loading ? '—' : events.length}
             </p>
           </div>
 
-          {/* Photos Uploaded */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
-              Photos Uploaded
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-gray-900">
-              {loading ? '...' : totalPhotos}
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Total photos uploaded
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Photos uploaded</p>
+            <p className="mt-3 text-3xl font-bold">
+              {loading ? '—' : totalPhotos}
             </p>
           </div>
 
-          {/* Active Events */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
-              Active Events
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-gray-900">
-              {loading ? '...' : activeEvents.length}
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Upcoming events
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Upcoming events</p>
+            <p className="mt-3 text-3xl font-bold">
+              {loading ? '—' : upcomingEvents}
             </p>
           </div>
-        </div>
+        </section>
 
-        {/* My Events */}
-        <section
-          id="my-events"
-          className="bg-white border border-gray-200 rounded-xl shadow-sm"
-        >
-          {/* Section header */}
-          <div className="px-6 py-5 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">
-              My Events
-            </h3>
-
-            <p className="text-sm text-gray-500 mt-1">
-              Events assigned to you.
-            </p>
+        <section>
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold">My events</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Open an event to view details or upload photos.
+              </p>
+            </div>
           </div>
 
-          {/* Loading */}
           {loading && (
-            <div className="px-6 py-16 text-center">
-              <div className="inline-block">
-                <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
-
-                <p className="text-gray-500 mt-4">
-                  Loading your events...
-                </p>
-              </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600">
+              Loading your events…
             </div>
           )}
 
-          {/* No events */}
-          {!loading && !error && events.length === 0 && (
-            <div className="px-6 py-16 text-center">
-              <h4 className="text-lg font-semibold text-gray-900">
-                No events assigned
-              </h4>
+          {!loading && error && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
+              {error}
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="ml-2 font-semibold underline"
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
-              <p className="text-sm text-gray-500 mt-2">
-                You have not been assigned to any events yet.
+          {!loading && !error && events.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+              <h3 className="text-lg font-semibold">No events assigned yet</h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Events assigned to your team will appear here.
               </p>
             </div>
           )}
 
-          {/* Events */}
-          {!loading && events.length > 0 && (
-            <div className="divide-y divide-gray-200">
-              {events.map((event) => (
-                <div
-                  key={event.id}
-                  className="px-6 py-7"
-                >
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    {/* Event information */}
-                    <div className="min-w-0 flex-1">
-                      <h4 className="text-xl font-semibold text-gray-900">
-                        {event.name || 'Unnamed Event'}
-                      </h4>
+          {!loading && !error && events.length > 0 && (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {events.map((event, index) => {
+                const id = getEventId(event)
+                const name = getEventName(event)
+                const location =
+                  event?.location ?? event?.venue ?? event?.place ?? 'Location not specified'
+                const date =
+                  event?.date ?? event?.eventDate ?? event?.startDate
 
-                      <div className="flex flex-wrap items-center gap-2 mt-3 text-sm text-gray-500">
-                        <span>
-                          {formatDate(event.eventDate)}
+                return (
+                  <article
+                    key={id ?? index}
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <div className="h-2 bg-indigo-600" />
+
+                    <div className="p-6">
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-lg font-bold">{name}</h3>
+                        <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                          {getPhotoCount(event)} photos
                         </span>
-
-                        {event.location && (
-                          <>
-                            <span>•</span>
-
-                            <span>
-                              {event.location}
-                            </span>
-                          </>
-                        )}
                       </div>
 
-                      {event.description && (
-                        <p className="text-sm text-gray-500 mt-3 max-w-2xl">
-                          {event.description}
-                        </p>
-                      )}
-
-                      <p className="text-sm font-medium text-gray-600 mt-3">
-                        {Number(event.photoCount || 0)} photos uploaded
+                      <p className="mt-4 text-sm text-slate-600">
+                        <span className="font-medium text-slate-800">Date:</span>{' '}
+                        {formatDate(date)}
                       </p>
-                    </div>
+                      <p className="mt-2 text-sm text-slate-600">
+                        <span className="font-medium text-slate-800">Location:</span>{' '}
+                        {location}
+                      </p>
 
-                    {/* Actions */}
-                    <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
-                      {/* Event Details */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleEventDetails(event.id)
-                        }
-                        className="relative z-50 inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition"
-                      >
-                        Event Details
-                      </button>
+                      <div className="mt-6 grid grid-cols-2 gap-3">
+                        <Link
+                          to={`/team/events/${id}`}
+                          className="rounded-lg border border-slate-300 px-3 py-2.5 text-center text-sm font-semibold hover:bg-slate-50"
+                        >
+                          View details
+                        </Link>
 
-                      {/* Upload Photos */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleUploadPhotos(event.id)
-                        }
-                        className="relative z-50 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 active:bg-black cursor-pointer transition"
-                      >
-                        Upload Photos
-                      </button>
+                        <Link
+                          to={`/team/events/${id}/upload`}
+                          className="rounded-lg bg-indigo-600 px-3 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-700"
+                        >
+                          Upload photos
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </article>
+                )
+              })}
             </div>
           )}
         </section>
