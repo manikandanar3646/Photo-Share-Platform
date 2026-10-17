@@ -1,514 +1,283 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-
 import { getMyEvents } from '../../services/teamService'
 import { getEventPhotos } from '../../services/photoService'
+
+function formatDate(value) {
+  if (!value) return 'Not specified'
+
+  const date = new Date(value)
+  return Number.isNaN(date.getTime())
+    ? 'Not specified'
+    : date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+}
+
+function getEventId(event) {
+  return event?.id ?? event?.eventId
+}
+
+function getEventName(event) {
+  return event?.name ?? event?.eventName ?? event?.title ?? 'Untitled event'
+}
+
+function getPhotoUrl(photo) {
+  return photo?.url ?? photo?.fileUrl ?? photo?.storageUrl ?? photo?.imageUrl ?? ''
+}
+
+function getPhotoName(photo, index) {
+  return photo?.name ?? photo?.fileName ?? photo?.originalFileName ?? `Photo ${index + 1}`
+}
 
 function EventDetails() {
   const { eventId } = useParams()
 
-  const [eventDetails, setEventDetails] = useState(null)
-  const [eventPhotos, setEventPhotos] = useState([])
+  const [event, setEvent] = useState(null)
+  const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [loadingPhotos, setLoadingPhotos] = useState(false)
+  const [photosLoading, setPhotosLoading] = useState(true)
   const [error, setError] = useState('')
+  const [photosError, setPhotosError] = useState('')
 
   useEffect(() => {
-    let cancelled = false
+    let active = true
 
     async function loadEvent() {
+      setLoading(true)
+      setError('')
+      setPhotosLoading(true)
+      setPhotosError('')
+      setEvent(null)
+      setPhotos([])
+
       try {
-        setLoading(true)
-        setError('')
-
-        const events = await getMyEvents()
-
-        const eventList = Array.isArray(events)
-          ? events
-          : []
-
-        const currentEvent = eventList.find(
-          (event) =>
-            String(event.id) === String(eventId)
+        const data = await getMyEvents()
+        const events = Array.isArray(data) ? data : data?.events ?? []
+        const found = events.find(
+          (item) => String(getEventId(item)) === String(eventId)
         )
 
-        if (!cancelled) {
-          if (!currentEvent) {
-            setError('Event not found or you do not have access to this event.')
-            setEventDetails(null)
-          } else {
-            setEventDetails(currentEvent)
-          }
+        if (!active) return
 
+        if (!found) {
+          setError('This event could not be found in your assigned events.')
           setLoading(false)
+          setPhotosLoading(false)
+          return
+        }
+
+        setEvent(found)
+        setLoading(false)
+
+        try {
+          const photoData = await getEventPhotos(eventId)
+          if (!active) return
+
+          const list = Array.isArray(photoData)
+            ? photoData
+            : photoData?.photos ?? photoData?.items ?? []
+
+          setPhotos(list)
+        } catch (err) {
+          if (!active) return
+          setPhotosError(
+            err.response?.data?.message ||
+              'The event loaded, but its photos could not be retrieved.'
+          )
+        } finally {
+          if (active) setPhotosLoading(false)
         }
       } catch (err) {
-        console.error('Failed to load team event:', err)
-        console.error('Status:', err?.response?.status)
-        console.error('Response:', err?.response?.data)
-
-        if (!cancelled) {
-          setError(
-            err?.response?.data?.message ||
-              err?.response?.data?.title ||
-              'Failed to load event.'
-          )
-
-          setLoading(false)
-        }
+        if (!active) return
+        setError(
+          err.response?.data?.message ||
+            err.response?.data?.title ||
+            'Unable to load event details. Please try again.'
+        )
+        setLoading(false)
+        setPhotosLoading(false)
       }
     }
 
     loadEvent()
 
     return () => {
-      cancelled = true
+      active = false
     }
   }, [eventId])
 
-  useEffect(() => {
-    if (!eventId) {
-      return
-    }
+  const eventName = event ? getEventName(event) : 'Event details'
+  const eventDate = event?.date ?? event?.eventDate ?? event?.startDate
+  const location =
+    event?.location ?? event?.venue ?? event?.place ?? 'Not specified'
+  const description =
+    event?.description ?? event?.details ?? 'No description provided.'
 
-    let cancelled = false
-
-    async function loadPhotos() {
-      try {
-        setLoadingPhotos(true)
-
-        const response = await getEventPhotos(eventId)
-
-        if (!cancelled) {
-          const data = Array.isArray(response)
-            ? response
-            : []
-
-          const mappedPhotos = data.map((photo) => ({
-            ...photo,
-            name:
-              photo.name ||
-              photo.fileName ||
-              `Photo ${photo.id}`,
-            url:
-              photo.url ||
-              photo.fileUrl ||
-              photo.storageUrl ||
-              '',
-            uploadedBy:
-              photo.uploadedByName ||
-              photo.uploadedBy?.name ||
-              photo.uploadedBy ||
-              'Unknown'
-          }))
-
-          setEventPhotos(mappedPhotos)
-        }
-      } catch (err) {
-        console.error('Failed to load photos:', err)
-        console.error('Status:', err?.response?.status)
-        console.error('Response:', err?.response?.data)
-
-        if (!cancelled) {
-          setError(
-            err?.response?.data?.message ||
-              err?.response?.data?.title ||
-              'Failed to load photos.'
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingPhotos(false)
-        }
-      }
-    }
-
-    loadPhotos()
-
-    return () => {
-      cancelled = true
-    }
-  }, [eventId])
-
-  function formatDate(date) {
-    if (!date) {
-      return 'Not specified'
-    }
-
-    const parsedDate = new Date(date)
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      return 'Not specified'
-    }
-
-    return parsedDate.toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    })
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100">
-
-        <header className="bg-white border-b">
-          <div className="w-full px-8 py-5">
-
-            <h1 className="text-xl font-bold text-gray-900">
-              PhotoShare
-            </h1>
-
-            <p className="text-sm text-gray-500 mt-1">
-              Team Member Portal
-            </p>
-
-          </div>
-        </header>
-
-        <main className="w-full px-8 py-8">
-
-          <div className="bg-white border rounded-xl p-10 text-center text-gray-500">
-            Loading event...
-          </div>
-
-        </main>
-
-      </div>
-    )
-  }
-
-  if (!eventDetails) {
-    return (
-      <div className="min-h-screen bg-gray-100">
-
-        <header className="bg-white border-b">
-          <div className="w-full px-8 py-5">
-
-            <h1 className="text-xl font-bold text-gray-900">
-              PhotoShare
-            </h1>
-
-            <p className="text-sm text-gray-500 mt-1">
-              Team Member Portal
-            </p>
-
-          </div>
-        </header>
-
-        <main className="w-full px-8 py-8">
-
-          <div className="bg-red-50 border border-red-200 rounded-xl p-5 text-red-700">
-            {error || 'Event not found.'}
-          </div>
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <Link to="/team" className="text-xl font-bold text-indigo-700">
+            PhotoShare <span className="font-medium text-slate-500">Team</span>
+          </Link>
 
           <Link
             to="/team"
-            className="inline-block mt-5 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium hover:bg-gray-800 transition"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-100"
           >
-            Back to Dashboard
+            Back to dashboard
           </Link>
-
-        </main>
-
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-
-      <header className="bg-white border-b">
-
-        <div className="w-full px-8 py-5">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <h1 className="text-xl font-bold text-gray-900">
-                PhotoShare
-              </h1>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Team Member Portal
-              </p>
-
-            </div>
-
-            <Link
-              to="/team"
-              className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-gray-50"
-            >
-              Back to Dashboard
-            </Link>
-
-          </div>
-
         </div>
-
       </header>
 
-      <main className="w-full px-8 py-8">
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-
-          <div>
-
-            <Link
-              to="/team"
-              className="text-sm text-gray-500 hover:text-black"
-            >
-              ← Back to My Events
-            </Link>
-
-            <h2 className="mt-3 text-2xl font-bold text-gray-900">
-              {eventDetails.name || 'Unnamed Event'}
-            </h2>
-
-            <p className="mt-1 text-gray-500">
-              Event details and photo uploads.
-            </p>
-
-          </div>
-
-          <Link
-            to={`/team/events/${eventId}/upload`}
-            className="px-4 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-gray-800 transition"
-          >
-            Upload Photos
-          </Link>
-
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
-            {error}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {loading && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600">
+            Loading event details…
           </div>
         )}
 
-        <div className="bg-white border rounded-xl p-6">
-
-          <h3 className="text-lg font-semibold text-gray-900">
-            Event Information
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Event Name
-              </p>
-
-              <p className="mt-1 font-medium text-gray-900">
-                {eventDetails.name || 'Not specified'}
-              </p>
-
+        {!loading && error && (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-700"
+          >
+            {error}
+            <div className="mt-4">
+              <Link to="/team" className="font-semibold underline">
+                Return to dashboard
+              </Link>
             </div>
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Event Date
-              </p>
-
-              <p className="mt-1 font-medium text-gray-900">
-                {formatDate(eventDetails.eventDate)}
-              </p>
-
-            </div>
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Location
-              </p>
-
-              <p className="mt-1 font-medium text-gray-900">
-                {eventDetails.location || 'Not specified'}
-              </p>
-
-            </div>
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Your Role
-              </p>
-
-              <span className="inline-block mt-1 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
-                Team
-              </span>
-
-            </div>
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Photos Uploaded
-              </p>
-
-              <p className="mt-1 font-medium text-gray-900">
-                {eventPhotos.length}
-              </p>
-
-            </div>
-
-            <div>
-
-              <p className="text-sm text-gray-500">
-                Status
-              </p>
-
-              <span className="inline-block mt-1 px-3 py-1 rounded-full bg-gray-900 text-white text-sm font-medium">
-                Active
-              </span>
-
-            </div>
-
           </div>
+        )}
 
-          {eventDetails.description && (
-            <div className="mt-6 pt-6 border-t">
-
-              <p className="text-sm text-gray-500">
-                Description
-              </p>
-
-              <p className="mt-1 text-gray-900">
-                {eventDetails.description}
-              </p>
-
-            </div>
-          )}
-
-        </div>
-
-        <div className="bg-white border rounded-xl p-6 mt-6">
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-            <div>
-
-              <h3 className="text-lg font-semibold text-gray-900">
-                Upload Event Photos
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Upload multiple photos from this event.
-              </p>
-
-            </div>
-
-            <Link
-              to={`/team/events/${eventId}/upload`}
-              className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-gray-50"
-            >
-              Upload Photos
-            </Link>
-
-          </div>
-
-        </div>
-
-        <div className="bg-white border rounded-xl p-6 mt-6">
-
-          <div className="flex items-center justify-between mb-6">
-
-            <div>
-
-              <h3 className="text-lg font-semibold text-gray-900">
-                Recent Photos
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Photos uploaded for this event.
-              </p>
-
-            </div>
-
-            <span className="text-sm text-gray-600">
-              {loadingPhotos
-                ? 'Loading...'
-                : `${eventPhotos.length} shown`}
-            </span>
-
-          </div>
-
-          {loadingPhotos ? (
-
-            <div className="py-10 text-center text-gray-500">
-              Loading photos...
-            </div>
-
-          ) : eventPhotos.length === 0 ? (
-
-            <div className="py-10 text-center">
-
-              <p className="font-medium text-gray-900">
-                No photos uploaded yet
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Upload photos for this event to see them here.
-              </p>
-
-            </div>
-
-          ) : (
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-              {eventPhotos.map((photo) => (
-
-                <div
-                  key={photo.id}
-                  className="border rounded-xl overflow-hidden"
-                >
-
-                  {photo.url ? (
-
-                    <img
-                      src={photo.url}
-                      alt={photo.name}
-                      className="w-full h-48 object-cover"
-                    />
-
-                  ) : (
-
-                    <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">
-                      Image unavailable
-                    </div>
-
-                  )}
-
-                  <div className="p-4">
-
-                    <p className="font-medium text-gray-900 truncate">
-                      {photo.name}
-                    </p>
-
-                    <p className="text-sm text-gray-500 mt-1">
-                      Uploaded by {photo.uploadedBy}
-                    </p>
-
-                  </div>
-
+        {!loading && !error && event && (
+          <>
+            <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
+                    Event overview
+                  </p>
+                  <h1 className="mt-2 text-3xl font-bold tracking-tight">
+                    {eventName}
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-slate-600">
+                    {description}
+                  </p>
                 </div>
 
-              ))}
+                <Link
+                  to={`/team/events/${eventId}/upload`}
+                  className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700"
+                >
+                  Upload photos
+                </Link>
+              </div>
 
+              <div className="mt-8 grid gap-4 border-t border-slate-100 pt-6 sm:grid-cols-3">
+                <div>
+                  <p className="text-sm text-slate-500">Event date</p>
+                  <p className="mt-1 font-semibold">{formatDate(eventDate)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Location</p>
+                  <p className="mt-1 font-semibold">{location}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Photos available</p>
+                  <p className="mt-1 font-semibold">
+                    {photosLoading ? 'Loading…' : photos.length}
+                  </p>
+                </div>
+              </div>
             </div>
 
-          )}
+            <section>
+              <div className="mb-5">
+                <h2 className="text-xl font-bold">Event photos</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Photos uploaded for this event.
+                </p>
+              </div>
 
-        </div>
+              {photosLoading && (
+                <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600">
+                  Loading photos…
+                </div>
+              )}
 
+              {!photosLoading && photosError && (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+                >
+                  {photosError}
+                </div>
+              )}
+
+              {!photosLoading && !photosError && photos.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+                  <h3 className="text-lg font-semibold">No photos yet</h3>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Upload the first photos for this event.
+                  </p>
+                  <Link
+                    to={`/team/events/${eventId}/upload`}
+                    className="mt-5 inline-flex rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                  >
+                    Upload photos
+                  </Link>
+                </div>
+              )}
+
+              {!photosLoading && photos.length > 0 && (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                  {photos.map((photo, index) => {
+                    const url = getPhotoUrl(photo)
+
+                    return (
+                      <article
+                        key={photo?.id ?? photo?.photoId ?? `${url}-${index}`}
+                        className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                      >
+                        {url ? (
+                          <a href={url} target="_blank" rel="noreferrer">
+                            <img
+                              src={url}
+                              alt={getPhotoName(photo, index)}
+                              loading="lazy"
+                              className="aspect-square w-full object-cover transition hover:scale-[1.02]"
+                            />
+                          </a>
+                        ) : (
+                          <div className="flex aspect-square items-center justify-center bg-slate-100 p-4 text-center text-sm text-slate-500">
+                            Image URL unavailable
+                          </div>
+                        )}
+
+                        <div className="p-3">
+                          <p className="truncate text-sm font-semibold">
+                            {getPhotoName(photo, index)}
+                          </p>
+                          {photo?.uploadedAt && (
+                            <p className="mt-1 text-xs text-slate-500">
+                              {formatDate(photo.uploadedAt)}
+                            </p>
+                          )}
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </main>
-
     </div>
   )
 }
