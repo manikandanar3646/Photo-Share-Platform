@@ -18,9 +18,11 @@ The platform allows administrators to create events, manage team members, collec
 
 ## 🌐 Live Website
 
-**Website:** https://photo-share-platform-m1u3nqpu3-manikandanar3646s-projects.vercel.app
+**Website:** https://photo-share-platform-q1i3523ie-manikandanar3646s-projects.vercel.app/
 
-**API Documentation:** https://photo-share-platform-clah.onrender.com/swagger
+**API Documentation:** https://photo-share-platform-clah.onrender.com/swagger/index.html
+
+**GitHub Repository:** https://github.com/manikandanar3646/Photo-Share-Platform
 
 ## 📌 Project Overview
 
