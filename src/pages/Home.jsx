@@ -427,27 +427,41 @@ function Home() {
 
           <div className="container">
 
-            <div className="gallery-header">
+            
+          <div className="gallery-header">
+            <div>
+              <span className="section-label">
+                CUSTOMER GALLERY
+              </span>
 
-              <div>
-
-                <span className="section-label">
-                  CUSTOMER GALLERY
-                </span>
-
-                <h2>
-                  Beautiful galleries made for sharing.
-                </h2>
-
-              </div>
+              <h2>
+                Beautiful galleries made for sharing.
+              </h2>
 
               <p>
-                Once your team finishes reviewing an event,
-                publish a protected gallery that customers
-                can access through a private link and PIN.
+                Already have a gallery code? Access your event photos
+                using the code and PIN provided by your organizer.
               </p>
 
+              <Link
+                to="/gallery"
+                className="primary-button"
+                style={{
+                display: 'inline-flex',
+                marginTop: '20px',
+                textDecoration: 'none'
+                }}
+                >
+                View Your Event Gallery →
+              </Link>
             </div>
+
+              <p>
+                  Explore your event memories in a private gallery
+                  protected by a PIN.
+               </p>
+          </div>
+
 
 
             <div className="gallery-grid">
