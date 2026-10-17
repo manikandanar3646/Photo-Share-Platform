@@ -1,77 +1,121 @@
-
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function GalleryAccess() {
-  const [galleryCode, setGalleryCode] = useState('')
+  const [galleryInput, setGalleryInput] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
   function handleSubmit(event) {
     event.preventDefault()
+    setError('')
 
-    const code = galleryCode.trim()
+    const input = galleryInput.trim()
 
-    if (!code) {
-      setError('Please enter your gallery code.')
+    if (!input) {
+      setError('Please enter your gallery code or shareable link.')
       return
     }
 
-    // Allow only URL-safe gallery codes.
-    if (!/^[a-zA-Z0-9-]+$/.test(code)) {
-      setError('Enter a valid gallery code.')
+    let galleryToken = input
+
+    try {
+      // Accept a complete shareable URL.
+      if (/^https?:\/\//i.test(input)) {
+        const parsedUrl = new URL(input)
+
+        // Accept only URLs ending in /gallery/{token}.
+        const match = parsedUrl.pathname.match(
+          /\/gallery\/([^/]+)\/?$/
+        )
+
+        if (!match) {
+          setError('That link does not look like a gallery link.')
+          return
+        }
+
+        galleryToken = decodeURIComponent(match[1])
+      } else {
+        // Also accept a token or a path such as /gallery/{token}.
+        const match = input.match(
+          /^(?:\/?gallery\/)?([^/?#]+)\/?$/
+        )
+
+        if (!match) {
+          setError('Please enter a valid gallery code or link.')
+          return
+        }
+
+        galleryToken = decodeURIComponent(match[1])
+      }
+    } catch {
+      setError('Please check your gallery code or shareable link.')
       return
     }
 
-    navigate(`/gallery/${encodeURIComponent(code)}`)
+    if (
+      !galleryToken ||
+      galleryToken === '.' ||
+      galleryToken === '..' ||
+      /[/?#\s]/.test(galleryToken)
+    ) {
+      setError('Please enter a valid gallery code or link.')
+      return
+    }
+
+    navigate(`/gallery/${encodeURIComponent(galleryToken)}`)
   }
 
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <header className="text-center mb-8">
+          <Link to="/" className="text-2xl font-bold text-gray-900">
             PhotoShare
-          </h1>
+          </Link>
+
           <p className="text-sm text-gray-500 mt-2">
             Your event memories, all in one place
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white border rounded-2xl shadow-sm p-8">
+        <section className="bg-white border rounded-2xl shadow-sm p-8">
           <div className="text-center mb-6">
-            <div className="text-4xl mb-4">📸</div>
+            <div className="text-4xl mb-4" aria-hidden="true">
+              📸
+            </div>
 
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-xl font-semibold text-gray-900">
               Find Your Event Gallery
-            </h2>
+            </h1>
 
             <p className="text-sm text-gray-500 mt-2">
-              Enter the gallery code provided by your event organizer.
+              Enter the gallery code or paste the private link
+              provided by your event organizer.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
-                htmlFor="gallery-code"
+                htmlFor="gallery-input"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Gallery Code
+                Gallery Code or Shareable Link
               </label>
 
               <input
-                id="gallery-code"
+                id="gallery-input"
                 type="text"
-                value={galleryCode}
+                value={galleryInput}
                 onChange={(event) => {
-                  setGalleryCode(event.target.value)
+                  setGalleryInput(event.target.value)
                   setError('')
                 }}
-                placeholder="Enter your gallery code"
-                autoComplete="off"
+                placeholder="Enter code or paste gallery link"
+                autoComplete="url"
                 required
-                className="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-gray-200"
+                className="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
 
@@ -89,15 +133,19 @@ function GalleryAccess() {
             </button>
           </form>
 
-          <div className="text-center mt-5">
-            <a
-              href="/"
+          <p className="text-xs text-gray-500 text-center mt-5">
+            Your gallery PIN is still required to access private photos.
+          </p>
+
+          <div className="text-center mt-4">
+            <Link
+              to="/"
               className="text-sm text-gray-500 hover:text-gray-900"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   )
