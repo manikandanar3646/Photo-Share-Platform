@@ -18,6 +18,8 @@ The platform allows administrators to create events, manage team members, collec
 
 ## 🌐 Live Website
 
+**Live website (Frontend):** https://photo-share-platform.vercel.app
+
 **Website:** https://photo-share-platform-q1i3523ie-manikandanar3646s-projects.vercel.app/
 
 **API Documentation:** https://photo-share-platform-clah.onrender.com/swagger/index.html
