@@ -12,6 +12,7 @@ import Photos from './pages/admin/Photos'
 import UploadPhotos from './pages/admin/UploadPhotos'
 import Galleries from './pages/admin/Galleries'
 import GalleryManagement from './pages/admin/GalleryManagement'
+import GalleryAccess from './pages/customer/GalleryAccess'
 
 // ================================
 // HOME PAGE
