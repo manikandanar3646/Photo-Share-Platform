@@ -123,6 +123,21 @@ function App() {
             CUSTOMER GALLERY ROUTES
         ================================= */}
         <Route
+          path="/gallery"
+          element={<GalleryAccess />}
+        />
+
+        <Route
+          path="/gallery/:galleryToken"
+          element={<GalleryPin />}
+        />
+
+        <Route
+          path="/gallery/:galleryToken/photos"
+          element={<Gallery />}
+        />
+        
+        <Route
           path="/gallery/:galleryToken"
           element={<GalleryPin />}
         />
