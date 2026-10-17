@@ -444,14 +444,14 @@ function Home() {
               </p>
 
               <Link
-                to="/gallery"
-                className="primary-button"
-                style={{
-                display: 'inline-flex',
-                marginTop: '20px',
-                textDecoration: 'none'
-                }}
-                >
+                  to="/gallery"
+                  className="primary-button"
+                  style={{
+                  display: 'inline-flex',
+                  marginTop: '20px',
+                  textDecoration: 'none'
+                  }}
+              >
                 View Your Event Gallery →
               </Link>
             </div>
