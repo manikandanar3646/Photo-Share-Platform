@@ -117,8 +117,7 @@ function App() {
           path="/team/events/:eventId/upload"
           element={<TeamUploadPhotos />}
         />
-
-
+        
         {/* ================================
             CUSTOMER GALLERY ROUTES
         ================================= */}
@@ -136,16 +135,7 @@ function App() {
           path="/gallery/:galleryToken/photos"
           element={<Gallery />}
         />
-        
-        <Route
-          path="/gallery/:galleryToken"
-          element={<GalleryPin />}
-        />
 
-        <Route
-          path="/gallery/:galleryToken/photos"
-          element={<Gallery />}
-        />
 
 
         {/* ================================
