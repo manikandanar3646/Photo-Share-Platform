@@ -1,11 +1,5 @@
 ## 👤 Demo Admin Access
 
-### Admin Registration Code
-
-```text
-PhotoShareAdmin2026
-```
-
 Use this code when registering a new Admin account.
 
 > **Note:** This is the **Admin Registration Code**, not the Admin login password. The Admin login password is the password selected during account registration.
