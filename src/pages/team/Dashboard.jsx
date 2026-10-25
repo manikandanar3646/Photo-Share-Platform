@@ -60,7 +60,9 @@ function Dashboard() {
           )
         }
       } finally {
-        if (active) setLoading(false)
+        if (active) {
+          setLoading(false)
+        }
       }
     }
 
@@ -112,7 +114,7 @@ function Dashboard() {
     <div className="min-h-screen w-full bg-slate-50 text-slate-900">
       {/* Header */}
       <header className="w-full border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link
             to="/team"
             className="text-xl font-bold tracking-tight text-indigo-700"
@@ -121,7 +123,7 @@ function Dashboard() {
             <span className="font-medium text-slate-500">Team</span>
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-3">
             <span className="hidden text-sm text-slate-500 sm:inline">
               Team workspace
             </span>
@@ -137,174 +139,178 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* Main dashboard */}
-      <main className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-6 sm:py-10 lg:px-8">
-        {/* Welcome section */}
-        <section className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
-              Team dashboard
-            </p>
-
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Welcome back
-            </h1>
-
-            <p className="mt-3 text-base leading-6 text-slate-600">
-              Manage your assigned events and upload event photos.
-            </p>
-          </div>
-
-          {firstEventId != null && (
-            <Link
-              to={`/team/events/${firstEventId}/upload`}
-              className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
-            >
-              Upload photos
-            </Link>
-          )}
-        </section>
-
-        {/* Statistics */}
-        <section
-          aria-label="Event statistics"
-          className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {statistics.map((statistic) => (
-            <article
-              key={statistic.label}
-              className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
-            >
-              <p className="text-sm font-medium text-slate-500">
-                {statistic.label}
+      {/* Main content */}
+      <main className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          {/* Welcome section */}
+          <section className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
+                Team dashboard
               </p>
 
-              <p className="mt-3 text-3xl font-bold leading-tight text-slate-900">
-                {statistic.value}
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                Welcome back
+              </h1>
+
+              <p className="mt-3 text-base leading-6 text-slate-600">
+                Manage your assigned events and upload event photos.
               </p>
-            </article>
-          ))}
-        </section>
-
-        {/* Events section */}
-        <section>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              My events
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Open an event to view details or upload photos.
-            </p>
-          </div>
-
-          {loading && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-sm">
-              Loading your events…
             </div>
-          )}
 
-          {!loading && error && (
-            <div
-              role="alert"
-              className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
-            >
-              <p>{error}</p>
-
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="mt-3 font-semibold underline"
+            {firstEventId != null && (
+              <Link
+                to={`/team/events/${firstEventId}/upload`}
+                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700"
               >
-                Retry
-              </button>
-            </div>
-          )}
+                Upload photos
+              </Link>
+            )}
+          </section>
 
-          {!loading && !error && events.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-              <h3 className="text-lg font-semibold text-slate-900">
-                No events assigned yet
-              </h3>
+          {/* Statistics cards */}
+          <section
+            aria-label="Event statistics"
+            className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {statistics.map((statistic) => (
+              <article
+                key={statistic.label}
+                className="min-w-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+              >
+                <p className="text-sm font-medium text-slate-500">
+                  {statistic.label}
+                </p>
 
-              <p className="mt-2 text-sm text-slate-500">
-                Events assigned to your team will appear here.
+                <p className="mt-3 text-3xl font-bold leading-tight text-slate-900">
+                  {statistic.value}
+                </p>
+              </article>
+            ))}
+          </section>
+
+          {/* My events */}
+          <section>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                My events
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Open an event to view details or upload photos.
               </p>
             </div>
-          )}
 
-          {!loading && !error && events.length > 0 && (
-            <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {events.map((event, index) => {
-                const id = getEventId(event)
-                const name = getEventName(event)
+            {loading && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-sm">
+                Loading your events…
+              </div>
+            )}
 
-                const location =
-                  event?.location ??
-                  event?.venue ??
-                  event?.place ??
-                  'Location not specified'
+            {!loading && error && (
+              <div
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
+              >
+                <p>{error}</p>
 
-                const date = event?.date ?? event?.eventDate ?? event?.startDate
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="mt-3 font-semibold underline"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
-                return (
-                  <article
-                    key={id ?? index}
-                    className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    <div className="h-2 w-full shrink-0 bg-indigo-600" />
+            {!loading && !error && events.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  No events assigned yet
+                </h3>
 
-                    <div className="flex flex-1 flex-col p-5 sm:p-6">
-                      <div className="flex min-w-0 items-start justify-between gap-3">
-                        <h3 className="min-w-0 break-words text-lg font-bold leading-6 text-slate-900">
-                          {name}
-                        </h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  Events assigned to your team will appear here.
+                </p>
+              </div>
+            )}
 
-                        <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-                          {getPhotoCount(event)} photos
-                        </span>
+            {!loading && !error && events.length > 0 && (
+              <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {events.map((event, index) => {
+                  const id = getEventId(event)
+                  const name = getEventName(event)
+
+                  const location =
+                    event?.location ??
+                    event?.venue ??
+                    event?.place ??
+                    'Location not specified'
+
+                  const date =
+                    event?.date ?? event?.eventDate ?? event?.startDate
+
+                  return (
+                    <article
+                      key={id ?? index}
+                      className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <div className="h-2 w-full shrink-0 bg-indigo-600" />
+
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
+                        <div className="flex min-w-0 items-start justify-between gap-3">
+                          <h3 className="min-w-0 break-words text-lg font-bold leading-6 text-slate-900">
+                            {name}
+                          </h3>
+
+                          <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                            {getPhotoCount(event)} photos
+                          </span>
+                        </div>
+
+                        <div className="mt-5 space-y-3 text-sm leading-6 text-slate-600">
+                          <p className="break-words">
+                            <span className="font-semibold text-slate-800">
+                              Date:
+                            </span>{' '}
+                            {formatDate(date)}
+                          </p>
+
+                          <p className="break-words">
+                            <span className="font-semibold text-slate-800">
+                              Location:
+                            </span>{' '}
+                            {location}
+                          </p>
+                        </div>
+
+                        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <Link
+                            to={`/team/events/${id}`}
+                            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                          >
+                            View details
+                          </Link>
+
+                          <Link
+                            to={`/team/events/${id}/upload`}
+                            className="inline-flex min-h-10 items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-indigo-700"
+                          >
+                            Upload photos
+                          </Link>
+                        </div>
                       </div>
-
-                      <div className="mt-5 space-y-3 text-sm leading-6 text-slate-600">
-                        <p className="break-words">
-                          <span className="font-semibold text-slate-800">
-                            Date:
-                          </span>{' '}
-                          {formatDate(date)}
-                        </p>
-
-                        <p className="break-words">
-                          <span className="font-semibold text-slate-800">
-                            Location:
-                          </span>{' '}
-                          {location}
-                        </p>
-                      </div>
-
-                      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:mt-auto sm:pt-6">
-                        <Link
-                          to={`/team/events/${id}`}
-                          className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
-                          View details
-                        </Link>
-
-                        <Link
-                          to={`/team/events/${id}/upload`}
-                          className="inline-flex min-h-10 items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-indigo-700"
-                        >
-                          Upload photos
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          )}
-        </section>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+        </div>
       </main>
     </div>
   )
 }
+        
 export default Dashboard
