@@ -52,17 +52,17 @@ function Dashboard() {
           setEvents(Array.isArray(data) ? data : data?.events ?? [])
         }
       } catch (err) {
+        console.error('Failed to load team events:', err)
+
         if (active) {
           setError(
             err.response?.data?.message ||
               err.response?.data?.title ||
-              'Unable to load your assigned events. Please try again.'
+              'Unable to load your events. Please try again.'
           )
         }
       } finally {
-        if (active) {
-          setLoading(false)
-        }
+        if (active) setLoading(false)
       }
     }
 
@@ -93,8 +93,6 @@ function Dashboard() {
     return !Number.isNaN(date.getTime()) && date >= new Date()
   }).length
 
-  const firstEventId = events.length ? getEventId(events[0]) : null
-
   const statistics = [
     {
       label: 'Assigned events',
@@ -114,7 +112,7 @@ function Dashboard() {
     <div className="min-h-screen w-full bg-slate-50 text-slate-900">
       {/* Header */}
       <header className="w-full border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex w-full items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
           <Link
             to="/team"
             className="text-xl font-bold tracking-tight text-indigo-700"
@@ -123,7 +121,7 @@ function Dashboard() {
             <span className="font-medium text-slate-500">Team</span>
           </Link>
 
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="flex shrink-0 items-center gap-4">
             <span className="hidden text-sm text-slate-500 sm:inline">
               Team workspace
             </span>
@@ -131,7 +129,7 @@ function Dashboard() {
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
             >
               Log out
             </button>
@@ -140,10 +138,10 @@ function Dashboard() {
       </header>
 
       {/* Main content */}
-      <main className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
+      <main className="w-full px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
+        <div className="w-full max-w-none">
           {/* Welcome section */}
-          <section className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <section className="mb-9 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">
               <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600">
                 Team dashboard
@@ -153,43 +151,43 @@ function Dashboard() {
                 Welcome back
               </h1>
 
-              <p className="mt-3 text-base leading-6 text-slate-600">
+              <p className="mt-3 text-base leading-7 text-slate-600">
                 Manage your assigned events and upload event photos.
               </p>
             </div>
 
-            {firstEventId != null && (
+            {events.length > 0 && getEventId(events[0]) != null && (
               <Link
-                to={`/team/events/${firstEventId}/upload`}
-                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+                to={`/team/events/${getEventId(events[0])}/upload`}
+                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700"
               >
                 Upload photos
               </Link>
             )}
           </section>
 
-          {/* Statistics cards */}
+          {/* Statistics */}
           <section
             aria-label="Event statistics"
-            className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3"
           >
             {statistics.map((statistic) => (
               <article
                 key={statistic.label}
-                className="min-w-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                className="min-w-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7"
               >
                 <p className="text-sm font-medium text-slate-500">
                   {statistic.label}
                 </p>
 
-                <p className="mt-3 text-3xl font-bold leading-tight text-slate-900">
+                <p className="mt-4 text-3xl font-bold leading-tight text-slate-900">
                   {statistic.value}
                 </p>
               </article>
             ))}
           </section>
 
-          {/* My events */}
+          {/* Events */}
           <section>
             <div className="mb-6">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -210,7 +208,7 @@ function Dashboard() {
             {!loading && error && (
               <div
                 role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
+                className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm leading-6 text-red-700"
               >
                 <p>{error}</p>
 
@@ -237,7 +235,7 @@ function Dashboard() {
             )}
 
             {!loading && !error && events.length > 0 && (
-              <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {events.map((event, index) => {
                   const id = getEventId(event)
                   const name = getEventName(event)
@@ -258,18 +256,18 @@ function Dashboard() {
                     >
                       <div className="h-2 w-full shrink-0 bg-indigo-600" />
 
-                      <div className="flex flex-1 flex-col p-5 sm:p-6">
-                        <div className="flex min-w-0 items-start justify-between gap-3">
-                          <h3 className="min-w-0 break-words text-lg font-bold leading-6 text-slate-900">
+                      <div className="flex flex-1 flex-col p-6 sm:p-8">
+                        <div className="flex min-w-0 items-start justify-between gap-4">
+                          <h3 className="min-w-0 break-words text-xl font-bold leading-7 text-slate-900">
                             {name}
                           </h3>
 
-                          <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                          <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
                             {getPhotoCount(event)} photos
                           </span>
                         </div>
 
-                        <div className="mt-5 space-y-3 text-sm leading-6 text-slate-600">
+                        <div className="mt-6 space-y-4 text-sm leading-6 text-slate-600">
                           <p className="break-words">
                             <span className="font-semibold text-slate-800">
                               Date:
@@ -285,17 +283,17 @@ function Dashboard() {
                           </p>
                         </div>
 
-                        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <Link
                             to={`/team/events/${id}`}
-                            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                           >
                             View details
                           </Link>
 
                           <Link
                             to={`/team/events/${id}/upload`}
-                            className="inline-flex min-h-10 items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-indigo-700"
+                            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-indigo-700"
                           >
                             Upload photos
                           </Link>
@@ -312,5 +310,4 @@ function Dashboard() {
     </div>
   )
 }
-        
 export default Dashboard
